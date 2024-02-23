@@ -7,7 +7,7 @@ from copy import deepcopy
 from .Log import log
 
 
-class SQLite_DB:
+class SQLite_DB_CRUD:
 
     def __init__ (self, db_name: str) -> None:        
         self.db_name = db_name + ".sqlite3"
@@ -17,7 +17,9 @@ class SQLite_DB:
 
         try:
             self.connection = sqlite3.connect(db_path)
+            self.connection.row_factory = sqlite3.Row
             self.cursor = self.connection.cursor()
+
 
         except Exception as e:
             err_msg = f"Error occurred when trying to connect to database ({self.db_name})."
@@ -43,6 +45,9 @@ class SQLite_DB:
     def __exit__ (self, *args):
         self.close_connection()
 
+    def _organize_data_in_dictionary (self, dataset: list):
+        return [dict(entity) for entity in dataset]
+
     def _extract_columns_names (self, table_name) -> list:
         sql_pragma = f"PRAGMA table_info([{table_name}])"
 
@@ -58,20 +63,6 @@ class SQLite_DB:
             print(err_msg)
             log(f"{err_msg}: {e}")
             return [None]    
-
-    def _organize_data (self, table_name: str, data_set: list):
-        column_names = self._extract_columns_names(table_name)
-        organized_entitys_list = []
-        organized_entity = dict()
-
-        for entity in data_set:
-            for col_data, col_name in zip(list(entity), column_names):
-                organized_entity[col_name] = col_data
-
-            organized_entitys_list.append(deepcopy(organized_entity))
-        
-        
-        return organized_entitys_list
 
     def insert_data (self, table_name: str, data: dict) -> bool:
         columns_names = tuple(data.keys())
@@ -95,38 +86,44 @@ class SQLite_DB:
             log(f"{err_msg}: {e}")
             return False
 
-    def get_data (self, table_name: str, command: str = "*", WHERE: str = "") -> dict:
-        if command != "*":
-            sql_select = f"SELECT {command} FROM {table_name}"
+    def get_data (self, table_name: str, command: str = "", WHERE: str = "") -> dict:
 
-            if WHERE:
-                sql_select += f" WHERE {WHERE}"
+        if command:
+            try:
+                sql_select = f"SELECT {command} FROM {table_name}"
 
-            self.cursor.execute(sql_select)
-            return self.cursor.fetchall()
-        
+                if WHERE:
+                    sql_select += f" WHERE {WHERE}"
+
+                self.cursor.execute(sql_select)
+                return self._organize_data_in_dictionary(self.cursor.fetchall())
+            
+            except Exception as e:
+                err_msg = f"Error occurred when trying to retrieve data from the table with command ({table_name})."
+                print(err_msg)
+                log(f"{err_msg}: {e}")
+                return []
+            
         if not WHERE:
             try:
                 self.cursor.execute(f"SELECT * FROM {table_name}")
                 
-                organized_data = self._organize_data(table_name, self.cursor.fetchall())
-                return organized_data
+                return self._organize_data_in_dictionary(self.cursor.fetchall())
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to retrieve data from the table ({table_name})."
                 print(err_msg)
                 log(f"{err_msg}: {e}")
                 return []
-               
+
         sql_select = (
-            f"SELECT {command} FROM {table_name} "
+            f"SELECT * FROM {table_name} "
             + f"WHERE {WHERE}"
         )
 
         try:
-            print(sql_select)
             self.cursor.execute(sql_select)
-            return self.cursor.fetchall()[0]
+            return self._organize_data_in_dictionary(self.cursor.fetchall())
 
         except Exception as e:
             err_msg = f"Error occurred when trying to retrieve data from the table ({table_name})."
@@ -134,8 +131,49 @@ class SQLite_DB:
             log(f"{err_msg}: {e}")
             return []
 
+    def edit_data (self, table_name: str, change_cmd: str, WHERE: str) -> bool:
 
-class Controle_Financeiro_DB (SQLite_DB):
+        sql_update = (
+            f"UPDATE {table_name} SET {change_cmd} " +
+            f"WHERE {WHERE}"
+        )
+
+        try:
+            self.cursor.execute(sql_update)
+            self.connection.commit()
+            return True
+        except Exception as e:
+            err_msg = f"Error occurred when trying to update data from the table ({table_name})."
+            print(err_msg)
+            log(f"{err_msg}: {e}")
+            return False
+
+    def delete_data (self, table_name: str, WHERE: str = "") -> bool:
+        if not WHERE:
+            try:
+                err_msg = f"Cannot execute an DELETE without WHERE clausule. table: ({table_name})."
+                raise ReferenceError(err_msg)
+            except ReferenceError as e:
+                print(err_msg)
+                log(f"{err_msg}: {e}")
+                return False
+        
+        sql_delete = (
+            f"DELETE FROM {table_name} WHERE {WHERE}"
+        )
+
+        try:
+            self.cursor.execute(sql_delete)
+            self.connection.commit()
+            return True
+        except Exception as e:
+            err_msg = f"Error occurred when trying to delete data from the table ({table_name})."
+            print(err_msg)
+            log(f"{err_msg}: {e}")
+            return False
+
+
+class Controle_Financeiro_DB (SQLite_DB_CRUD):
 
     def __init__ (self, db_name) -> None:
         super().__init__(db_name)
