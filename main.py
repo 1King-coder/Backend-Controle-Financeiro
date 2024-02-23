@@ -8,9 +8,8 @@ TEST_DB_NAME = "DB_teste"
 
 
 with SQLite_DB_CRUD(TEST_DB_NAME) as test_db:
-    test_db.delete_data("teste_table", WHERE="id BETWEEN 10 AND 12")
 
-    data = test_db.get_data("teste_table", WHERE="id BETWEEN 9 AND 13")
+    data = test_db.get_data("teste_table",command="id, name")
     
     print(data)
 

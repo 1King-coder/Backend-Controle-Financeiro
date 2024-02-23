@@ -172,8 +172,51 @@ class SQLite_DB_CRUD:
             log(f"{err_msg}: {e}")
             return False
 
+    def _create_table (self, table_structure: dict):
+        """
+        Function used to create a table in the database.
+        table_structure must have this dict structure:
+        {
+            name: tableName,
+            columns: ('columnName type configs', ...) -> in SQL and tuple type
+        }
+        """
+        sql_create_table = (
+            f"CREATE TABLE {table_structure['name']} {table_structure['columns']}"
+        )
 
+        try:
+            self.cursor.execute(sql_create_table)
+            self.connection.commit()
+        
+        except Exception as e:
+            err_msg = f"Error occurred when trying to create the table {table_structure['name']}."
+            print(err_msg)
+            log(f"{err_msg}: {e}")
+            return False
+        
 class Controle_Financeiro_DB (SQLite_DB_CRUD):
 
     def __init__ (self, db_name) -> None:
         super().__init__(db_name)
+
+        self.bancos_table_structure = {
+            'name': 'Bancos',
+            'columns': (
+                "id INTEGER Primary key autoincrement" +
+                "nome varchar(50) not null"
+            )
+        }
+
+        self.tables = []
+        self.tables.append(self.bancos_table_structure)
+
+    
+
+
+    
+
+        
+
+
+        
