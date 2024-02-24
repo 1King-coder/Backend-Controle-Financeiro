@@ -212,11 +212,11 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
         }
 
         self.historico_bancos_structure = {
-            'name': 'historicoBancos',
+            'name': 'Historico_bancos',
             'columns': ("(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Bancos(id), " +
+                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco varchar(50) NOT NULL, " +
                 "saldo REAL NOT NULL, " +
                 "created_at DATETIME DEFAULT now() NOT NULL" +
@@ -230,16 +230,16 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id INTEGER Primary key autoincrement, " +
                 "nome varchar(50) NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at DATETIME DEFAULT now() on update now() NOT NULL"
+                "updated_at DATETIME DEFAULT now() ON UPDATE now() NOT NULL"
             )
         }
 
         self.historico_direcionamentos_structure = {
-            'name': 'historicoDirecionamentos',
+            'name': 'Historico_direcionamentos',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Direcionamentos(id), " +
+                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco varchar(50) NOT NULL, " +
                 "saldo REAL NOT NULL, " +
                 "created_at DATETIME DEFAULT now() NOT NULL" + 
@@ -247,17 +247,49 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             )
         }
 
-        self.historico_direcionamentos_structure = {
-            'name': 'historicoDirecionamentos',
+        self.gastos_geral_structure = {
+            'name': 'Gastos_geral',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Direcionamentos(id), " +
-                "nome_banco varchar(50) NOT NULL, " +
-                "saldo REAL NOT NULL, " +
+                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "id_direcionamento INTEGER, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "tipo_gasto VARCHAR(50) NOT NULL DEFAULT 'imediato', " +
+                "descrição VARCHAR(255), " +
+                "valor REAL NOT NULL, " +
                 "created_at DATETIME DEFAULT now() NOT NULL" + 
                 ")"
             )
+        }
+
+        self.gastos_imediatos_structure = {
+            'name': 'Gastos_imediatos',
+            'columns': ( "(" +
+                "id_gasto INTEGER Primary key, " +
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
+                "descrição VARCHAR(255), " +
+                "valor REAL NOT NULL, " +
+                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                ")"
+            ) 
+        }
+
+        self.gastos_periodizados_structure = {
+            'name': 'Gastos_periodizados',
+            'columns': ( "(" +
+                "id_gasto INTEGER Primary key, " +
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
+                "descrição VARCHAR(255), " +
+                "valor_parcela REAL NOT NULL, " +
+                "dia_abate DATETIME DEFAULT now() NOT NULL" +
+                "numero_total_parcelas INTEGER NOT NULL" +
+                "" +
+                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                ")"
+            ) 
         }
 
         self.tables = []
