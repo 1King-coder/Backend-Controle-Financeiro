@@ -178,7 +178,7 @@ class SQLite_DB_CRUD:
         table_structure must have this dict structure:
         {
             name: tableName,
-            columns: ('columnName type configs', ...) -> in SQL and tuple type
+            columns: "(columnName type configs, ...)" -> in SQL
         }
         """
         sql_create_table = (
@@ -202,9 +202,61 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
 
         self.bancos_table_structure = {
             'name': 'Bancos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "nome varchar(50) NOT NULL" +
+                "saldo REAL NOT NULL, " +
+                "updated_at DATETIME DEFAULT now() on update now() NOT NULL" +
+                ")"
+            )
+        }
+
+        self.historico_bancos_structure = {
+            'name': 'historicoBancos',
+            'columns': ("(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "Foreign key (id_banco) references Bancos(id), " +
+                "nome_banco varchar(50) NOT NULL, " +
+                "saldo REAL NOT NULL, " +
+                "created_at DATETIME DEFAULT now() NOT NULL" +
+                ")"
+            )
+        }
+
+        self.direcionamentos_table_structure = {
+            'name': 'Direcionamentos',
             'columns': (
-                "id INTEGER Primary key autoincrement" +
-                "nome varchar(50) not null"
+                "id INTEGER Primary key autoincrement, " +
+                "nome varchar(50) NOT NULL, " +
+                "saldo REAL NOT NULL, " +
+                "updated_at DATETIME DEFAULT now() on update now() NOT NULL"
+            )
+        }
+
+        self.historico_direcionamentos_structure = {
+            'name': 'historicoDirecionamentos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "Foreign key (id_banco) references Direcionamentos(id), " +
+                "nome_banco varchar(50) NOT NULL, " +
+                "saldo REAL NOT NULL, " +
+                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                ")"
+            )
+        }
+
+        self.historico_direcionamentos_structure = {
+            'name': 'historicoDirecionamentos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "Foreign key (id_banco) references Direcionamentos(id), " +
+                "nome_banco varchar(50) NOT NULL, " +
+                "saldo REAL NOT NULL, " +
+                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                ")"
             )
         }
 
