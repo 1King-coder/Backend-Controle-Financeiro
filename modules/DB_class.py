@@ -190,8 +190,9 @@ class SQLite_DB_CRUD:
         }
         """
         sql_create_table = (
-            f"CREATE TABLE {table_structure['name']} {table_structure['columns']}"
+            f"CREATE TABLE IF NOT EXISTS {table_structure['name']} {table_structure['columns']}"
         )
+        print(sql_create_table)
 
         try:
             self.cursor.execute(sql_create_table)
@@ -212,9 +213,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Bancos',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
-                "nome TEXT NOT NULL" +
+                "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" +
+                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" +
                 ")"
             )
         }
@@ -227,7 +228,7 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" +
                 ")"
             )
         }
@@ -238,7 +239,7 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id INTEGER Primary key autoincrement, " +
                 "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL"
+                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL"
             )
         }
 
@@ -250,7 +251,7 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             )
         }
@@ -264,9 +265,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_direcionamento INTEGER, " +
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "tipo_gasto TEXT NOT NULL DEFAULT 'imediato', " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             )
         }
@@ -277,9 +278,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_gasto INTEGER Primary key, " +
                 "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             ) 
         }
@@ -290,12 +291,12 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_gasto INTEGER Primary key, " +
                 "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor_parcela REAL NOT NULL, " +
-                "dia_abate TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL, " +
+                "dia_abate TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " +
                 "numero_total_parcelas INTEGER NOT NULL, " +
                 "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             ) 
         }
@@ -308,9 +309,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_banco_destino INTEGER, " +
                 "Foreign key (id_banco_origem) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             )
         }
@@ -323,9 +324,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_direcionamento_destino INTEGER, " +
                 "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             )
         }
@@ -335,20 +336,30 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "id_direcionamento INTEGER, " +
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "descrição TEXT, " +
+                "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
                 ")"
             )
         }
 
+        self.tables_structures = [
+            structure[1]
+            for structure in self.__dict__.items()
+            if 'structure' in structure[0]
+        ]
+    
 
+    def _create_controle_financeiro_tables (self) -> None:
+        
+        for structure in self.tables_structures:
+            self._create_table(structure)
 
-        self.tables = []
-        self.tables.append(self.bancos_table_structure)
+        
+
 
     
 
