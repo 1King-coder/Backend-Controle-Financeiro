@@ -19,7 +19,8 @@ class SQLite_DB_CRUD:
             self.connection = sqlite3.connect(db_path)
             self.connection.row_factory = sqlite3.Row
             self.cursor = self.connection.cursor()
-
+            self.cursor.execute("PRAGMA foreign_keys = ON;")
+            self.connection.commit()
 
         except Exception as e:
             err_msg = f"Error occurred when trying to connect to database ({self.db_name})."
@@ -66,13 +67,20 @@ class SQLite_DB_CRUD:
 
     def insert_data (self, table_name: str, data: dict) -> bool:
         columns_names = tuple(data.keys())
+
+        
         
         binding_str = "(" + ("?, " * len(columns_names))[:-2] + ")"
+
+        if len(columns_names) == 1:
+            columns_names = str(columns_names)[:-2] + ")"
 
         sql_insert = (
             f"INSERT INTO {table_name} "
             + f"{columns_names} VALUES {binding_str}"
         )
+
+        print(sql_insert)
 
         try:
             self.cursor.execute(sql_insert, tuple(data.values()))
@@ -204,9 +212,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Bancos',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
-                "nome varchar(50) NOT NULL" +
+                "nome TEXT NOT NULL" +
                 "saldo REAL NOT NULL, " +
-                "updated_at DATETIME DEFAULT now() on update now() NOT NULL" +
+                "updated_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" +
                 ")"
             )
         }
@@ -217,9 +225,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
                 "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "nome_banco varchar(50) NOT NULL, " +
+                "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at DATETIME DEFAULT now() NOT NULL" +
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" +
                 ")"
             )
         }
@@ -228,9 +236,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Direcionamentos',
             'columns': (
                 "id INTEGER Primary key autoincrement, " +
-                "nome varchar(50) NOT NULL, " +
+                "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at DATETIME DEFAULT now() ON UPDATE now() NOT NULL"
+                "updated_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL"
             )
         }
 
@@ -238,11 +246,11 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Historico_direcionamentos',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
-                "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "nome_banco varchar(50) NOT NULL, " +
+                "id_direcionamento INTEGER, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
                 ")"
             )
         }
@@ -255,10 +263,10 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "id_direcionamento INTEGER, " +
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "tipo_gasto VARCHAR(50) NOT NULL DEFAULT 'imediato', " +
-                "descrição VARCHAR(255), " +
+                "tipo_gasto TEXT NOT NULL DEFAULT 'imediato', " +
+                "descrição TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
                 ")"
             )
         }
@@ -269,9 +277,9 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_gasto INTEGER Primary key, " +
                 "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
-                "descrição VARCHAR(255), " +
+                "descrição TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
                 ")"
             ) 
         }
@@ -282,15 +290,62 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id_gasto INTEGER Primary key, " +
                 "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
-                "descrição VARCHAR(255), " +
+                "descrição TEXT, " +
                 "valor_parcela REAL NOT NULL, " +
-                "dia_abate DATETIME DEFAULT now() NOT NULL" +
-                "numero_total_parcelas INTEGER NOT NULL" +
-                "" +
-                "created_at DATETIME DEFAULT now() NOT NULL" + 
+                "dia_abate TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL, " +
+                "numero_total_parcelas INTEGER NOT NULL, " +
+                "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
                 ")"
             ) 
         }
+
+        self.transferencias_entre_bancos_structure = {
+            'name': 'Transferencias_entre_bancos',
+            'columns': ( "(" +
+                "id INTEGER Primary key, " +
+                "id_banco_origem INTEGER, " +
+                "id_banco_destino INTEGER, " +
+                "Foreign key (id_banco_origem) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "descrição TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                ")"
+            )
+        }
+
+        self.transferencias_entre_bancos_structure = {
+            'name': 'Transferencias_entre_bancos',
+            'columns': ( "(" +
+                "id INTEGER Primary key, " +
+                "id_direcionamento_origem INTEGER, " +
+                "id_direcionamento_destino INTEGER, " +
+                "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "descrição TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                ")"
+            )
+        }
+
+        self.depositos_structure = {
+            'name': 'Depositos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "id_direcionamento INTEGER, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "descrição TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT strftime('%d-%m-%Y', 'now') NOT NULL" + 
+                ")"
+            )
+        }
+
+
 
         self.tables = []
         self.tables.append(self.bancos_table_structure)
