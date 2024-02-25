@@ -192,7 +192,6 @@ class SQLite_DB_CRUD:
         sql_create_table = (
             f"CREATE TABLE IF NOT EXISTS {table_structure['name']} {table_structure['columns']}"
         )
-        print(sql_create_table)
 
         try:
             self.cursor.execute(sql_create_table)
@@ -225,21 +224,21 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'columns': ("(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " +
+                "FOREIGN KEY (id_banco) REFERENCES Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
 
         self.direcionamentos_table_structure = {
             'name': 'Direcionamentos',
-            'columns': (
+            'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL"
+                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL)"
             )
         }
 
@@ -248,10 +247,10 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_direcionamento INTEGER, " +
-                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "nome_banco TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL," + 
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
@@ -261,13 +260,13 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "id_direcionamento INTEGER, " +
-                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "tipo_gasto TEXT NOT NULL DEFAULT 'imediato', " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
@@ -276,11 +275,10 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Gastos_imediatos',
             'columns': ( "(" +
                 "id_gasto INTEGER Primary key, " +
-                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" + 
                 ")"
             ) 
         }
@@ -289,14 +287,13 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'name': 'Gastos_periodizados',
             'columns': ( "(" +
                 "id_gasto INTEGER Primary key, " +
-                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "CONSTRAINT gastos_imediatos_PK Primary key (id_gasto), " +
                 "descricao TEXT, " +
                 "valor_parcela REAL NOT NULL, " +
                 "dia_abate TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " +
                 "numero_total_parcelas INTEGER NOT NULL, " +
                 "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             ) 
         }
@@ -307,26 +304,26 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
                 "id INTEGER Primary key, " +
                 "id_banco_origem INTEGER, " +
                 "id_banco_destino INTEGER, " +
-                "Foreign key (id_banco_origem) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_banco_origem) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
 
-        self.transferencias_entre_bancos_structure = {
-            'name': 'Transferencias_entre_bancos',
+        self.transferencias_entre_direcionamentos_structure = {
+            'name': 'Transferencias_entre_direcionamentos',
             'columns': ( "(" +
                 "id INTEGER Primary key, " +
                 "id_direcionamento_origem INTEGER, " +
                 "id_direcionamento_destino INTEGER, " +
-                "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
@@ -336,12 +333,12 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
-                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "id_direcionamento INTEGER, " +
-                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" + 
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
