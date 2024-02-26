@@ -5,18 +5,18 @@ class Direcionamento_model:
 
     @property
     def nome (self):
-        return self.__nome
+        return self._nome
     
     @nome.setter
     def nome (self, value):
         if not isinstance(value, str):
             raise TypeError("Campo nome tem que ser tipo texto.")
         
-        self.__nome = value
+        self._nome = value
 
     @property
     def saldo (self):
-        return self.__saldo
+        return self._saldo
     
     @saldo.setter
     def saldo (self, value):
@@ -27,4 +27,4 @@ class Direcionamento_model:
                 raise TypeError("Campo saldo tem que possuir um valor numérico.")
                 return None
         
-        self.__saldo = float(value)
+        self._saldo = float(value)
