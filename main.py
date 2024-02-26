@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 from random import randint
-from modules.DB_class import Controle_Financeiro_DB, SQLite_DB_CRUD
+from modules.controllers.DB_base_class import Controle_Financeiro_DB, SQLite_DB_CRUD
 from datetime import datetime, timedelta
 
 MAIN_DB_NAME = "Controle_Financeiro_DB"

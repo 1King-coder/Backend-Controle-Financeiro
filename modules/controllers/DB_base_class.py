@@ -4,7 +4,7 @@ from datetime import datetime
 from copy import deepcopy
 
  
-from .Log import log
+from ..Log import log
 
 
 class SQLite_DB_CRUD:
@@ -13,7 +13,7 @@ class SQLite_DB_CRUD:
         self.db_name = db_name + ".sqlite3"
 
     def init_connection (self) -> None:
-        db_path = Path(__file__).parent.parent.joinpath("DB") / self.db_name
+        db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name
 
         try:
             self.connection = sqlite3.connect(db_path)
@@ -353,22 +353,6 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
         
         for structure in self.tables_structures:
             self._create_table(structure)
-
-    def add_Banco (self, nome: str) -> bool:
-
-        if type(nome) != 'str':
-            print('Nome tem que ser do tipo string!')
-            return False
-
-        return self.insert_data('Bancos', {'nome': nome})    
-    
-    def add_Direcionamento (self, nome) -> bool:
-
-        if type(nome) != 'str':
-            print('Nome tem que ser do tipo string!')
-            return False
-
-        return self.insert_data('Direcionamentos', {'nome': nome})    
     
 
 
