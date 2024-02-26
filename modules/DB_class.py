@@ -349,15 +349,26 @@ class Controle_Financeiro_DB (SQLite_DB_CRUD):
             if 'structure' in structure[0]
         ]
     
-
     def _create_controle_financeiro_tables (self) -> None:
         
         for structure in self.tables_structures:
             self._create_table(structure)
 
-        
+    def add_Banco (self, nome: str) -> bool:
 
+        if type(nome) != 'str':
+            print('Nome tem que ser do tipo string!')
+            return False
 
+        return self.insert_data('Bancos', {'nome': nome})    
+    
+    def add_Direcionamento (self, nome) -> bool:
+
+        if type(nome) != 'str':
+            print('Nome tem que ser do tipo string!')
+            return False
+
+        return self.insert_data('Direcionamentos', {'nome': nome})    
     
 
 
