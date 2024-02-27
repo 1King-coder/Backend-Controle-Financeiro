@@ -3,13 +3,15 @@ from pathlib import Path
 from random import randint
 from modules.controllers.DB_base_class import Controle_Financeiro_DB, SQLite_DB_CRUD
 from datetime import datetime, timedelta
+from modules.controllers.Banco_controller import Banco_controller
+
 
 MAIN_DB_NAME = "Controle_Financeiro_DB"
 TEST_DB_NAME = "DB_teste"
 
 
-with Controle_Financeiro_DB(TEST_DB_NAME) as test_db:
-    test_db._create_controle_financeiro_tables()
+# with Controle_Financeiro_DB(TEST_DB_NAME) as test_db:
+#     test_db._create_controle_financeiro_tables()
 
 # CF_db = Controle_Financeiro_DB(MAIN_DB_NAME)
 

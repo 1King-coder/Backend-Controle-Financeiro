@@ -98,10 +98,18 @@ class Gasto_periodizado_model:
         
         self._valor_parcela = float(value)
 
+    @property
+    def  dados (self) -> dict:
+        # retorna um dict com as chaves sem o "_"
+        return {
+            key[1:]: value 
+            for key, value in self.__dict__.items()
+        }
+
 def main():
     teste = Gasto_periodizado_model(1, 532, 12, 0)
 
-    print(teste.__dict__)
+    print(teste.dados)
 
 if __name__ == '__main__':
     main()

@@ -1,8 +1,9 @@
-from .models.Banco_model import Banco_model
+from .models.Direcionamento_model import Direcionamento_model
 
 from .DB_base_class import SQLite_DB_CRUD
 
-class Banco_controller (SQLite_DB_CRUD):
+class Direcionamento_controller (SQLite_DB_CRUD):
+
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
@@ -82,11 +83,5 @@ class Banco_controller (SQLite_DB_CRUD):
             return self.atualiza_saldo(id_banco, saldo_calculado)
         
         return False
-
-    def adiciona_banco(self, nome_banco: str) -> bool:
-
-        novo_banco = Banco_model(nome_banco)
-
-        return self.insert_data("Bancos", novo_banco.dados_banco)
-
+    
     

@@ -29,6 +29,17 @@ class Banco_model:
         
         self._saldo = float(value)
 
+    @property
+    def  dados (self) -> dict:
+        # retorna um dict com as chaves sem o "_"
+        return {
+            key[1:]: value 
+            for key, value in self.__dict__.items()
+        }
 
-if __name__ == "__main__":
-    pass
+def main():
+    teste = Banco_model("teste")
+    print(teste.dados_banco)
+
+if __name__ == '__main__':
+    main()

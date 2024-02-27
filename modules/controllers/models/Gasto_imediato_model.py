@@ -44,3 +44,11 @@ class Gasto_imediato_model:
                 raise TypeError("Campo valor tem que possuir um valor numérico.")
         
         self._valor = float(value)
+
+    @property
+    def  dados (self) -> dict:
+        # retorna um dict com as chaves sem o "_"
+        return {
+            key[1:]: value 
+            for key, value in self.__dict__.items()
+        }
