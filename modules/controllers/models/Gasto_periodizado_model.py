@@ -11,6 +11,14 @@ class Gasto_periodizado_model:
         self.descricao = descricao
 
     @property
+    def valor_total (self) -> float:
+        return self._valor_total
+    
+    @valor_total.setter
+    def valor_total (self, _) -> None:
+        self._valor_total = self.valor_parcela * self.controle_parcelas
+
+    @property
     def id_gasto (self):
         return self._id_gasto
     

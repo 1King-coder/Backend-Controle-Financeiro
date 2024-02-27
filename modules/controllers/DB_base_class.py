@@ -66,10 +66,14 @@ class SQLite_DB_CRUD:
             return [None]    
 
     def insert_data (self, table_name: str, data: dict) -> bool:
+        """
+        Equivalent to:
+        INSERT INTO {table_name} {tuple(data.keys())} 
+        VALUES {tuple(data.values())}
+        """
+
         columns_names = tuple(data.keys())
 
-        
-        
         binding_str = "(" + ("?, " * len(columns_names))[:-2] + ")"
 
         if len(columns_names) == 1:
@@ -95,6 +99,10 @@ class SQLite_DB_CRUD:
             return False
 
     def get_data (self, table_name: str, command: str = "", WHERE: str = "") -> dict:
+        """
+        Equivalent to:
+        SELECT {command} FROM {table_name} WHERE {WHERE}
+        """
 
         if command:
             try:
@@ -140,7 +148,10 @@ class SQLite_DB_CRUD:
             return []
 
     def edit_data (self, table_name: str, change_cmd: str, WHERE: str) -> bool:
-
+        """
+        Equivalent to:
+        UPDATE {table_name} SET {change_cmd} WHERE {WHERE};
+        """
         sql_update = (
             f"UPDATE {table_name} SET {change_cmd} " +
             f"WHERE {WHERE}"
@@ -157,6 +168,10 @@ class SQLite_DB_CRUD:
             return False
 
     def delete_data (self, table_name: str, WHERE: str = "") -> bool:
+        """
+        Equivalent to:
+        DELETE FROM {table_name} WHERE {WHERE}
+        """
         if not WHERE:
             try:
                 err_msg = f"Cannot execute an DELETE without WHERE clausule. table: ({table_name})."
