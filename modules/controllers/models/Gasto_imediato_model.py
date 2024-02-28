@@ -52,3 +52,17 @@ class Gasto_imediato_model:
             key[1:]: value 
             for key, value in self.__dict__.items()
         }
+    
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Gastos_imediatos',
+            'columns': ( "(" +
+                "id_gasto INTEGER Primary key, " +
+                "descricao TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" + 
+                ")"
+            ) 
+        }

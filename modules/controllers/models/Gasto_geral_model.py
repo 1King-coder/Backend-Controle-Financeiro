@@ -80,3 +80,22 @@ class Gasto_geral_model:
             key[1:]: value 
             for key, value in self.__dict__.items()
         }
+    
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Gastos_geral',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "id_direcionamento INTEGER, " +
+                "tipo_gasto TEXT NOT NULL DEFAULT 'imediato', " +
+                "descricao TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")"
+            )
+        }
+        

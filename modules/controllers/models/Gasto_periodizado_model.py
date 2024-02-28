@@ -106,6 +106,23 @@ class Gasto_periodizado_model:
             for key, value in self.__dict__.items()
         }
 
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Gastos_periodizados',
+            'columns': ( "(" +
+                "id_gasto INTEGER Primary key, " +
+                "descricao TEXT, " +
+                "valor_parcela REAL NOT NULL, " +
+                "dia_abate TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " +
+                "numero_total_parcelas INTEGER NOT NULL, " +
+                "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")"
+            ) 
+        }
+
 def main():
     teste = Gasto_periodizado_model(1, 532, 12, 0)
 

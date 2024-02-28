@@ -69,3 +69,20 @@ class Transferencia_entre_direcionamentos_model:
             key[1:]: value 
             for key, value in self.__dict__.items()
         }
+    
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Transferencias_entre_direcionamentos',
+            'columns': ( "(" +
+                "id INTEGER Primary key, " +
+                "id_direcionamento_origem INTEGER, " +
+                "id_direcionamento_destino INTEGER, " +
+                "descricao TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")"
+            )
+        }

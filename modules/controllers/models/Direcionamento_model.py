@@ -36,3 +36,15 @@ class Direcionamento_model:
             key[1:]: value 
             for key, value in self.__dict__.items()
         }
+
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Direcionamentos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "nome TEXT NOT NULL, " +
+                "saldo REAL NOT NULL, " +
+                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL)"
+            )
+        }

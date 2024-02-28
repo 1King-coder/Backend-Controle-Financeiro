@@ -70,4 +70,23 @@ class Deposito_model:
             key[1:]: value 
             for key, value in self.__dict__.items()
         }
+    
+    @staticmethod
+    def structure () -> dict:
+        return {
+            'name': 'Depositos',
+            'columns': ( "(" +
+                "id INTEGER Primary key autoincrement, " +
+                "id_banco INTEGER, " +
+                "id_direcionamento INTEGER, " +
+                "descricao TEXT, " +
+                "valor REAL NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                ")"
+            )
+        }
+
+        
 
