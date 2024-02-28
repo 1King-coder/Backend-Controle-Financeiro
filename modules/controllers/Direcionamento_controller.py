@@ -34,7 +34,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
     
     def get_total_transferencias_recebidas (self, id_direcionamento) -> float:
         total_transferencias_recebidas = self.get_data(
-            "Transferencias_entre_bancos",
+            "Transferencias_entre_direcionamentos",
             "SUM(valor) AS 'total'", 
             f"id_direcionamento_destino = {id_direcionamento}"
         )
@@ -44,7 +44,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
     def get_total_transferencias_enviadas (self, id_direcionamento) -> float:
 
         total_transferencias_enviadas = self.get_data(
-            "Transferencias_entre_bancos",
+            "Transferencias_entre_direcionamentos",
             "SUM(valor) AS 'total'", 
             f"id_direcionamento_origem = {id_direcionamento}"
         )
@@ -52,7 +52,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         return total_transferencias_enviadas[0]['total']
 
     def get_saldo (self, id_direcionamento) -> float:
-        saldo = self.get_data("Bancos", command="saldo", WHERE=f"id = {id_direcionamento}" )
+        saldo = self.get_data("direcionamentos", command="saldo", WHERE=f"id = {id_direcionamento}" )
 
         return saldo[0]['saldo']
 
@@ -62,6 +62,21 @@ class Direcionamento_controller (SQLite_DB_CRUD):
             return self.edit_data("Direcionamentos", f"saldo = {novo_saldo}", f"id = {id_direcionamento}")
         
         return False
+    
+    def get_id_direcionamento (self, nome_direcionamento: str = "", saldo: float = 0) -> int:
+
+        if nome_direcionamento:
+            return self.get_data("Direcionamentos", "id", f"nome = {nome_direcionamento}")[0]['id']
+        
+        if saldo:
+            return self.get_data("Direcionamentos", "id", f"saldo = {saldo}")[0]['id']
+        
+        return None
+
+    def edita_nome_direcionamentos (self, id_direcionamento: int, novo_nome: str) -> bool:
+        self.edit_data("Direcionamentos", f"nome = {novo_nome}", f"id = {id_direcionamento}")
+        return Historico_direcionamentos_controller().edit_data("Historico_direcionamentoss", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}")
+
 
     def _calcula_saldo (self, id_direcionamento: int) -> float:
         recebimentos = (
@@ -91,3 +106,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         novo_direcionamento = Direcionamento_model(nome_direcionamento)
 
         return self.insert_data("Direcionamento", novo_direcionamento.dados)
+    
+    def deleta_direcionamento (self, id_direcionamento: int) -> bool:
+        return self.delete_data("Direcionamentos", f"id = {id_direcionamento}")
+    

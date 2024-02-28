@@ -3,8 +3,6 @@ import os
 from modules.controllers.DB_base_class import SQLite_DB_CRUD
 from modules.Log import log
 
-
-
 class Migration (SQLite_DB_CRUD):
     def __init__ (self, db_name) -> None:
         super().__init__(db_name)

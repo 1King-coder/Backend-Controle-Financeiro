@@ -69,6 +69,20 @@ class Banco_controller (SQLite_DB_CRUD):
 
         return saldo[0]['saldo']
 
+    def get_id_banco (self, nome_banco: str = "", saldo: float = 0) -> int:
+
+        if nome_banco:
+            return self.get_data("Bancos", "id", f"nome = {nome_banco}")[0]['id']
+        
+        if saldo:
+            return self.get_data("Bancos", "id", f"saldo = {saldo}")[0]['id']
+        
+        return None
+
+    def edita_nome_banco (self, id_banco, novo_nome: str) -> bool:
+        self.edit_data("Bancos", f"nome = {novo_nome}", f"id = {id_banco}")
+        return Historico_bancos_controller().edit_data("Historico_bancos", f"nome = {novo_nome}", f"id_banco = {id_banco}")
+
     def atualiza_saldo (self, id_banco: int, novo_saldo: float) -> bool:
         if self.verifica_saldo_precisa_att(id_banco):
             Historico_bancos_controller().adiciona_historico_banco(id_banco)
@@ -105,4 +119,6 @@ class Banco_controller (SQLite_DB_CRUD):
 
         return self.insert_data("Bancos", novo_banco.dados)
 
+    def deleta_banco (self, id_banco: int) -> bool:
+        return self.delete_data("Bancos", f"id = {id_banco}")
     
