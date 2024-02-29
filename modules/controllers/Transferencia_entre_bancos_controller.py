@@ -4,9 +4,8 @@ from pandas import DataFrame
 
 class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
 
-    def __init__ (self) -> None:
-        # super().__init__("Controle_Financeiro_DB") 
-        super().__init__("DB_teste")
+    def __init__ (self, db_name: str) -> None:
+        super().__init__(db_name)
 
     def mostrar (self) -> list:
         return self.get_data(

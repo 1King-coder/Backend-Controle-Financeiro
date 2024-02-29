@@ -8,9 +8,8 @@ from datetime import datetime
 
 class Gasto_periodizado_controller (SQLite_DB_CRUD):
 
-    def __init__ (self) -> None:
-        # super().__init__("Controle_Financeiro_DB")
-        super().__init__("DB_teste")
+    def __init__ (self, db_name: str) -> None:
+        super().__init__(db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -20,7 +19,7 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
     def dataframe (self) -> 'DataFrame':
         return DataFrame(self.mostrar())
 
-    def get_dados_gasto_periodizado (self, id_gasto: int, dados_desejados: str = "*") -> dict:
+    def get_dados (self, id_gasto: int, dados_desejados: str = "*") -> dict:
 
         dados_gasto = self.get_data("Gastos_periodizados", dados_desejados.strip(), f"id_gasto = {id_gasto}")
         if "," in dados_desejados:
@@ -28,10 +27,12 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
 
         return dados_gasto[0][dados_desejados.strip()]
     
-    def adiciona_gasto_periodizado (self, id_banco:int,
+    def adicionar (self, id_banco:int,
                                     id_direcionamento: int, valor_parcela: float, 
                                     total_parcelas: int, controle_parcelas: int = 0,
-                                    descricao: str = "", dia_abate: str = "") -> bool:
+                                    descricao: str = "Gasto periodizado", dia_abate: str = "") -> bool:
+
+        descricao += f" {self.cursor.lastrowid}"
 
         gasto_geral_model = Gasto_geral_model(
             id_banco, id_direcionamento, "periodizado",
@@ -51,19 +52,19 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         return False
     
     def get_dia_abate (self, id_gasto: int) -> str:
-        dia_abate = self.get_dados_gasto_periodizado(
+        dia_abate = self.get_dados(
             id_gasto, "dia_abate"
         )
         return dia_abate
     
     def get_total_parcelas (self, id_gasto: int) -> int:
-        total_parcelas = self.get_dados_gasto_periodizado(
+        total_parcelas = self.get_dados(
             id_gasto, "total_parcelas"
         )
         return total_parcelas
 
     def get_controle_parcelas (self, id_gasto: int) -> int:
-        controle_parcelas = self.get_dados_gasto_periodizado(
+        controle_parcelas = self.get_dados(
             id_gasto, "controle_parcelas"
         )
         return controle_parcelas
@@ -96,3 +97,32 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
             f"id_gasto = {id_gasto}"
         )
     
+    def editar (self,
+                           id_gasto: int, novo_valor: float = 0,
+                           nova_descricao: str = "", novo_id_banco: int = 0,
+                           novo_id_direcionamento: int = 0, novo_total_parcelas: int = 0,
+                           novo_dia_abate: str = "") -> bool:
+
+        novos_dados = {
+            'valor_parcela': novo_valor,
+            'total_parcelas': novo_total_parcelas,
+            'dia_abate': novo_dia_abate,
+            'descricao': nova_descricao,
+            'id_banco': novo_id_banco,
+            'id_direcionamento': novo_id_direcionamento
+        }
+
+        edit_command = ""
+
+        for key, value in novos_dados.items():
+            if value:
+                if key == 'descricao':
+                    edit_command += f"{key} = {value} {self.cursor.lastrowid}, "
+                    continue
+
+                edit_command += f"{key} = {value}, "
+
+        edit_command = edit_command[:-2]
+
+        return self.edit_data("Gastos_periodizados", edit_command, f"id_gasto = {id_gasto}")
+            

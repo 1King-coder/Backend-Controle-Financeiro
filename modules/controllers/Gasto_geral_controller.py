@@ -6,9 +6,8 @@ from pandas import DataFrame
 
 class Gasto_geral_controller (SQLite_DB_CRUD):
 
-    def __init__ (self) -> None:
-        # super().__init__("Controle_Financeiro_DB")
-        super().__init__("DB_teste")
+    def __init__ (self, db_name: str) -> None:
+        super().__init__(db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -18,18 +17,15 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
     def dataframe (self) -> 'DataFrame':
         return DataFrame(self.mostrar())
 
-    def adiciona_gasto_geral (self, 
+    def adicionar (self, 
                               id_banco: int, id_direcionamento: int,
-                              valor: float, tipo_gasto: str= "imediato", descricao: str="") -> bool:
+                              valor: float, tipo_gasto: str= "imediato", descricao: str="Gasto") -> bool:
 
         """
         Sempre que um gasto for inserido, ele automaticamente irá inserir um
         gasto na tabela de gastos imediatos ou periodizados, de acordo com seu
         tipo de gasto.
         """
-
-        if not descricao:
-            descricao = f"Gasto {self.cursor.lastrowid}"
 
         descricao += f" {self.cursor.lastrowid}"
         
@@ -60,7 +56,7 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
 
         return False
     
-    def get_gasto_geral_id (self, descricao: str) -> int:
+    def get_id (self, descricao: str) -> int:
         return self.get_data(
             "Gastos_gerais",
             "id",
@@ -73,14 +69,17 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
 
         return descricao
 
-    def deleta_gasto_geral (self, id_gasto: int) -> bool:
+    def deletar (self, id_gasto: int) -> bool:
         return self.delete_data("Gastos_gerais", f"id = {id_gasto}")
 
-    def edita_gasto_geral (self,
+    def editar (self,
                            id_gasto: int, novo_valor: float = 0,
                            nova_descricao: str = "", novo_id_banco: int = 0,
                            novo_id_direcionamento: int = 0) -> bool:
         
+        nova_descricao += f" {self.cursor.lastrowid}"
+
+
         novos_dados = {
             'valor': novo_valor,
             'descricao': nova_descricao,

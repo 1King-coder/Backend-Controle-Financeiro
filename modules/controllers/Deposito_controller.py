@@ -5,9 +5,8 @@ from pandas import DataFrame
 
 class Deposito_controller (SQLite_DB_CRUD):
 
-    def __init__ (self) -> None:
-        # super().__init__("Controle_Financeiro_DB")
-        super().__init__("DB_teste")
+    def __init__ (self, db_name: str) -> None:
+        super().__init__(db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -17,9 +16,9 @@ class Deposito_controller (SQLite_DB_CRUD):
     def dataframe (self) -> 'DataFrame':
         return DataFrame(self.mostrar())
 
-    def adiciona_deposito (self, 
+    def adicionar (self, 
                               id_banco: int, id_direcionamento: int,
-                              valor: float, descricao: str="") -> bool:
+                              valor: float, descricao: str="Deposito") -> bool:
 
         """
         Sempre que um gasto for inserido, ele automaticamente irá inserir um
@@ -27,8 +26,7 @@ class Deposito_controller (SQLite_DB_CRUD):
         tipo de gasto.
         """
 
-        if not descricao:
-            descricao = f"Deposito {self.cursor.lastrowid}"
+        descricao += f" {self.cursor.lastrowid}"
 
         deposito = Deposito_model(
             id_banco, id_direcionamento,
@@ -47,10 +45,10 @@ class Deposito_controller (SQLite_DB_CRUD):
             f"descricao = {descricao}"
         )
     
-    def deleta_deposito (self, id_deposito: int) -> bool:
+    def deletar (self, id_deposito: int) -> bool:
         return self.delete_data("Depositos", f"id = {id_deposito}")
 
-    def edita_deposito (self,
+    def editar (self,
                            id_deposito: int, novo_valor: float = 0,
                            nova_descricao: str = "", novo_id_banco: int = 0,
                            novo_id_direcionamento: int = 0) -> bool:
@@ -66,6 +64,10 @@ class Deposito_controller (SQLite_DB_CRUD):
 
         for key, value in novos_dados.items():
             if value:
+                if key == "descricao":
+                    edit_command += f"{key} = {value} {self.cursor.lastrowid}, "
+                    continue
+
                 edit_command += f"{key} = {value}, "
 
         edit_command = edit_command[:-2]

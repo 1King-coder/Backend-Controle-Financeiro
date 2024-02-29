@@ -7,10 +7,10 @@ from .DB_base_class import SQLite_DB_CRUD
 
 class Direcionamento_controller (SQLite_DB_CRUD):
 
-    def __init__ (self) -> None:
-        # super().__init__("Controle_Financeiro_DB")
-        super().__init__("DB_teste")
+    def __init__ (self, db_name: str) -> None:
+        super().__init__(db_name)
 
+        
     def mostrar (self) -> list:
         return self.get_data(
             "Direcionamentos"
@@ -73,18 +73,18 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
         return saldo[0]['saldo']
 
-    def edita_saldo (self, id_direcionamento: int, novo_saldo: float) -> bool:
+    def editar (self, id_direcionamento: int, novo_saldo: float) -> bool:
 
         return self.edit_data("Direcionamentos", f"saldo = {novo_saldo}", f"id = {id_direcionamento}")
 
-    def atualiza_saldo (self, id_direcionamento: int) -> bool:
+    def atualizar (self, id_direcionamento: int) -> bool:
         if self.verifica_saldo_precisa_att(id_direcionamento):
             historico_dir_controller = Historico_direcionamentos_controller()
             historico_dir_controller.init_connection()
             historico_dir_controller.adiciona_historico_direcionamento(id_direcionamento)
             historico_dir_controller.close_connection()
             saldo_novo = self._calcula_saldo(id_direcionamento)
-            return self.edita_saldo(id_direcionamento, saldo_novo)
+            return self.editar(id_direcionamento, saldo_novo)
         
         return False
  
