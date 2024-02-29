@@ -2,6 +2,7 @@
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_periodizado_model import Gasto_periodizado_model
 from .DB_base_class import SQLite_DB_CRUD
+from pandas import DataFrame
 
 from datetime import datetime
 
@@ -10,6 +11,14 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Gastos_periodizados"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def get_dados_gasto_periodizado (self, id_gasto: int, dados_desejados: str = "*") -> dict:
 

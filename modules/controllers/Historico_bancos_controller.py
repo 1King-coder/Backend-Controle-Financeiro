@@ -1,4 +1,5 @@
 from ..models.Historico_bancos_model import Historico_bancos_model
+from pandas import DataFrame
 
 from .DB_base_class import SQLite_DB_CRUD
 
@@ -6,6 +7,14 @@ class Historico_bancos_controller (SQLite_DB_CRUD):
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Historico_bancos"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def get_dados_banco (self, id_banco) -> int:
         dados_banco = self.get_data("Bancos", "nome, saldo", f"id = {id_banco}")

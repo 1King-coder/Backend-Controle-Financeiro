@@ -1,12 +1,22 @@
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_imediato_model import Gasto_imediato_model
 from .DB_base_class import SQLite_DB_CRUD
+from pandas import DataFrame
+
 
 class Gasto_geral_controller (SQLite_DB_CRUD):
 
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Gastos_gerais"
+        )
+
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def adiciona_gasto_geral (self, 
                               id_banco: int, id_direcionamento: int,

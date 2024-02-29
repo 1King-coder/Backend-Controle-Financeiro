@@ -1,5 +1,6 @@
 from ..models.Banco_model import Banco_model
 from .Historico_bancos_controller import Historico_bancos_controller
+from pandas import DataFrame
 
 from .DB_base_class import SQLite_DB_CRUD
 
@@ -7,6 +8,14 @@ class Banco_controller (SQLite_DB_CRUD):
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Bancos"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
     
     def get_total_depositos (self, id_banco) -> float:
         total_depositos = self.get_data("Depositos", "SUM(valor) AS 'total'", f"id_banco = {id_banco}")

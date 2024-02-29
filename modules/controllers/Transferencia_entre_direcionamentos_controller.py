@@ -1,11 +1,20 @@
 from .DB_base_class import SQLite_DB_CRUD
 from ..models.Transferencia_entre_direcionamentos_model import Transferencia_entre_direcionamentos_model
+from pandas import DataFrame
 
 class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
 
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB") 
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Transferencias_entre_direcionamentos"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def get_id (self, descricao: str) -> int:
         return self.get_data(

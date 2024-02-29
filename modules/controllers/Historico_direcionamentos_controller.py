@@ -1,4 +1,5 @@
 from ..models.Historico_direcionamentos_model import Historico_direcionamentos_model
+from pandas import DataFrame
 
 from .DB_base_class import SQLite_DB_CRUD
 
@@ -6,6 +7,14 @@ class Historico_direcionamentos_controller (SQLite_DB_CRUD):
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Historico_direcionamentos"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def get_dados_direcionamento (self, id_direcionamento) -> int:
         dados_direcionamento = self.get_data("Direcionamentos", "nome, saldo", f"id = {id_direcionamento}")

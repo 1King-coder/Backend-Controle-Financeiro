@@ -1,11 +1,21 @@
 from ..models.Deposito_model import Deposito_model
 from .DB_base_class import SQLite_DB_CRUD
+from pandas import DataFrame
+
 
 class Deposito_controller (SQLite_DB_CRUD):
 
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
+
+    def mostrar (self) -> list:
+        return self.get_data(
+            "Depositos"
+        )
+    
+    def dataframe (self) -> 'DataFrame':
+        return DataFrame(self.mostrar())
 
     def adiciona_deposito (self, 
                               id_banco: int, id_direcionamento: int,
