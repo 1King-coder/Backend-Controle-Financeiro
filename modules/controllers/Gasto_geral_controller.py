@@ -1,5 +1,5 @@
-from .models.Gasto_geral_model import Gasto_geral_model
-from .models.Gasto_imediato_model import Gasto_imediato_model
+from ..models.Gasto_geral_model import Gasto_geral_model
+from ..models.Gasto_imediato_model import Gasto_imediato_model
 from .DB_base_class import SQLite_DB_CRUD
 
 class Gasto_geral_controller (SQLite_DB_CRUD):

@@ -1,4 +1,4 @@
-from .models.Deposito_model import Deposito_model
+from ..models.Deposito_model import Deposito_model
 from .DB_base_class import SQLite_DB_CRUD
 
 class Deposito_controller (SQLite_DB_CRUD):

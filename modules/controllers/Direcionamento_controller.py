@@ -1,4 +1,4 @@
-from .models.Direcionamento_model import Direcionamento_model
+from ..models.Direcionamento_model import Direcionamento_model
 from .Historico_direcionamentos_controller import Historico_direcionamentos_controller
 
 from .DB_base_class import SQLite_DB_CRUD

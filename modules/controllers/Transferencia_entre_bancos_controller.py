@@ -1,5 +1,5 @@
 from .DB_base_class import SQLite_DB_CRUD
-from .models.Transferencia_entre_bancos_model import Transferencia_entre_bancos_model
+from ..models.Transferencia_entre_bancos_model import Transferencia_entre_bancos_model
 
 class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
 

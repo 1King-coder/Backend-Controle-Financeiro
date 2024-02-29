@@ -1,4 +1,4 @@
-from .models.Banco_model import Banco_model
+from ..models.Banco_model import Banco_model
 from .Historico_bancos_controller import Historico_bancos_controller
 
 from .DB_base_class import SQLite_DB_CRUD

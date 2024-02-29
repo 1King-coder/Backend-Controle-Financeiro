@@ -10,12 +10,12 @@ class Migration (SQLite_DB_CRUD):
     def get_models (self) -> list:
         nomes_models = [
             model[:-3]
-            for model in os.listdir("modules/controllers/models")
+            for model in os.listdir("modules/models")
             if model != "__pycache__"
         ]
 
         models_list = [
-            importlib.import_module(f"modules.controllers.models.{nome_model}").__getattribute__(nome_model)
+            importlib.import_module(f"modules.models.{nome_model}").__getattribute__(nome_model)
             for nome_model in nomes_models
         ]
 

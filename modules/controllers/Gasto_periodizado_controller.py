@@ -1,12 +1,7 @@
-if __name__ == "__main__":
-    from models.Gasto_geral_model import Gasto_geral_model
-    from models.Gasto_periodizado_model import Gasto_periodizado_model
-    from DB_base_class import SQLite_DB_CRUD
 
-else:
-    from .models.Gasto_geral_model import Gasto_geral_model
-    from .models.Gasto_periodizado_model import Gasto_periodizado_model
-    from .DB_base_class import SQLite_DB_CRUD
+from ..models.Gasto_geral_model import Gasto_geral_model
+from ..models.Gasto_periodizado_model import Gasto_periodizado_model
+from .DB_base_class import SQLite_DB_CRUD
 
 from datetime import datetime
 
@@ -92,11 +87,3 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
             f"id_gasto = {id_gasto}"
         )
     
-def main():
-    with Gasto_periodizado_controller() as ctrler:
-
-        ctrler.adiciona_gasto_periodizado(
-            1, 1, 110, total_parcelas=12
-        )
-if __name__ == '__main__':
-    main()

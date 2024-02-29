@@ -1,5 +1,5 @@
 from .DB_base_class import SQLite_DB_CRUD
-from .models.Transferencia_entre_direcionamentos_model import Transferencia_entre_direcionamentos_model
+from ..models.Transferencia_entre_direcionamentos_model import Transferencia_entre_direcionamentos_model
 
 class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
 
