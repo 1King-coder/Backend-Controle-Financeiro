@@ -7,16 +7,15 @@ class Historico_direcionamentos_controller (SQLite_DB_CRUD):
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
 
-    def get_saldo_direcionamento (self, id_direcionamento) -> int:
-        dados_direcionamento = self.get_data("Direcionamentos", "saldo", f"id = {id_direcionamento}")
-
+    def get_dados_direcionamento (self, id_direcionamento) -> int:
+        dados_direcionamento = self.get_data("Direcionamentos", "nome, saldo", f"id = {id_direcionamento}")
         return dados_direcionamento[0]
 
     def adiciona_historico_direcionamento (self, id_direcionamento: str) -> bool:
 
-        dados_direcionamento = self.get_dados_direcionamentos(id_direcionamento)
+        dados_direcionamento = self.get_dados_direcionamento(id_direcionamento)
 
-        novo_direcionamento = Historico_direcionamentos_model(id_direcionamento, dados_direcionamento['saldo'])
+        novo_direcionamento = Historico_direcionamentos_model(id_direcionamento, dados_direcionamento['nome'], dados_direcionamento['saldo'])
 
         return self.insert_data("Historico_direcionamentos", novo_direcionamento.dados)
     

@@ -7,43 +7,28 @@ class Banco_controller (SQLite_DB_CRUD):
     def __init__ (self) -> None:
         # super().__init__("Controle_Financeiro_DB")
         super().__init__("DB_teste")
-
-    def cria_tabela_Bancos (self) -> bool:
-        bancos_table_structure = {
-            'name': 'Bancos',
-            'columns': ( "(" +
-                "id INTEGER Primary key autoincrement, " +
-                "nome TEXT NOT NULL, " +
-                "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL" +
-                ")"
-            )
-        }
-
-        return self._create_table(bancos_table_structure)
     
     def get_total_depositos (self, id_banco) -> float:
         total_depositos = self.get_data("Depositos", "SUM(valor) AS 'total'", f"id_banco = {id_banco}")
-
         return total_depositos[0]['total']
 
     def get_total_gastos_imediatos (self, id_banco) -> float:
         get_gastos_imediatos = f"""
-        SELECT id_banco, SUM(Gastos_geral.valor) AS 'total' FROM Gastos_geral 
-        JOIN Gastos_imediatos ON Gastos_imediatos.id_gasto = Gastos_geral.id 
+        SELECT id_banco, SUM(Gastos_gerais.valor) AS 'total' FROM Gastos_gerais 
+        JOIN Gastos_imediatos ON Gastos_imediatos.id_gasto = Gastos_gerais.id 
         WHERE id_banco = {id_banco}"""
 
-        self.cursor.executescript(get_gastos_imediatos)
-        return self.cursor.fetchone()['total']
+        self.cursor.execute(get_gastos_imediatos)
+        return dict(self.cursor.fetchone())['total']
     
     def get_total_gastos_periodizados (self, id_banco) -> float:
         get_gastos_periodizados = f"""
-        SELECT id_banco, SUM(Gastos_periodizados.valor_total) AS 'total' FROM Gastos_geral 
-        JOIN Gastos_periodizados ON Gastos_imediatos.id_gasto = Gastos_geral.id 
+        SELECT id_banco, SUM(Gastos_periodizados.valor_parcela * Gastos_periodizados.controle_parcelas) AS 'total' FROM Gastos_gerais 
+        JOIN Gastos_periodizados ON Gastos_periodizados.id_gasto = Gastos_gerais.id 
         WHERE id_banco = {id_banco}"""
 
-        self.cursor.executescript(get_gastos_periodizados)
-        return self.cursor.fetchone()['total']
+        self.cursor.execute(get_gastos_periodizados)
+        return dict(self.cursor.fetchone())['total']
     
     def get_total_transferencias_recebidas (self, id_banco) -> float:
         total_transferencias_recebidas = self.get_data(
@@ -51,6 +36,9 @@ class Banco_controller (SQLite_DB_CRUD):
             "SUM(valor) AS 'total'", 
             f"id_banco_destino = {id_banco}"
         )
+
+        if not total_transferencias_recebidas[0]['total']:
+            return 0
 
         return total_transferencias_recebidas[0]['total']
 
@@ -61,6 +49,9 @@ class Banco_controller (SQLite_DB_CRUD):
             "SUM(valor) AS 'total'", 
             f"id_banco_origem = {id_banco}"
         )
+
+        if not total_transferencias_enviadas[0]['total']:
+            return 0
 
         return total_transferencias_enviadas[0]['total']
 
@@ -81,12 +72,24 @@ class Banco_controller (SQLite_DB_CRUD):
 
     def edita_nome_banco (self, id_banco, novo_nome: str) -> bool:
         self.edit_data("Bancos", f"nome = {novo_nome}", f"id = {id_banco}")
-        return Historico_bancos_controller().edit_data("Historico_bancos", f"nome = {novo_nome}", f"id_banco = {id_banco}")
+        historico_banco_controller = Historico_bancos_controller()
+        historico_banco_controller.init_connection()
+        historico_was_edited = historico_banco_controller.edit_data("Historico_bancos", f"nome = {novo_nome}", f"id_banco = {id_banco}") 
+        historico_banco_controller.close_connection()
+        return historico_was_edited        
 
-    def atualiza_saldo (self, id_banco: int, novo_saldo: float) -> bool:
+    def edita_saldo (self, id_banco: int, novo_saldo: float) -> bool:
+
+        return self.edit_data("Bancos", f"saldo = {novo_saldo}", f"id = {id_banco}")
+
+    def atualiza_saldo (self, id_banco: int) -> bool:
         if self.verifica_saldo_precisa_att(id_banco):
-            Historico_bancos_controller().adiciona_historico_banco(id_banco)
-            return self.edit_data("Bancos", f"saldo = {novo_saldo}", f"id = {id_banco}")
+            historico_banco_controller = Historico_bancos_controller()
+            historico_banco_controller.init_connection()
+            historico_banco_controller.adiciona_historico_banco(id_banco)
+            historico_banco_controller.close_connection()
+            saldo_novo = self._calcula_saldo(id_banco)
+            return self.edita_saldo(id_banco, saldo_novo)
         
         return False
 

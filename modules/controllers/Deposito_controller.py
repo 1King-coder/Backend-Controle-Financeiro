@@ -26,7 +26,7 @@ class Deposito_controller (SQLite_DB_CRUD):
         )                
 
         return self.insert_data(
-            "Deposito",
+            "Depositos",
             deposito.dados
         )
     

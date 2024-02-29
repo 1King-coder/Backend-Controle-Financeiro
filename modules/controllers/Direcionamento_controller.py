@@ -11,26 +11,27 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
     def get_total_depositos (self, id_direcionamento) -> float:
         total_depositos = self.get_data("Depositos", "SUM(valor) AS 'total'", f"id_direcionamento = {id_direcionamento}")
-
         return total_depositos[0]['total']
 
     def get_total_gastos_imediatos (self, id_direcionamento) -> float:
         get_gastos_imediatos = f"""
-        SELECT id_direcionamento, SUM(Gastos_geral.valor) AS 'total' FROM Gastos_geral 
-        JOIN Gastos_imediatos ON Gastos_imediatos.id_gasto = Gastos_geral.id 
+        SELECT id_direcionamento, SUM(Gastos_gerais.valor) AS 'total' FROM Gastos_gerais 
+        JOIN Gastos_imediatos ON Gastos_imediatos.id_gasto = Gastos_gerais.id 
         WHERE id_direcionamento = {id_direcionamento}"""
 
-        self.cursor.executescript(get_gastos_imediatos)
-        return self.cursor.fetchone()['total']
+        self.cursor.execute(get_gastos_imediatos)
+        
+        return dict(self.cursor.fetchone())['total']
     
     def get_total_gastos_periodizados (self, id_direcionamento) -> float:
         get_gastos_periodizados = f"""
-        SELECT id_direcionamento, SUM(Gastos_periodizados.valor_total) AS 'total' FROM Gastos_geral 
-        JOIN Gastos_periodizados ON Gastos_imediatos.id_gasto = Gastos_geral.id 
+        SELECT id_direcionamento, SUM(Gastos_periodizados.valor_parcela * Gastos_periodizados.controle_parcelas) AS 'total' FROM Gastos_gerais 
+        JOIN Gastos_periodizados ON Gastos_periodizados.id_gasto = Gastos_gerais.id 
         WHERE id_direcionamento = {id_direcionamento}"""
 
-        self.cursor.executescript(get_gastos_periodizados)
-        return self.cursor.fetchone()['total']
+        self.cursor.execute(get_gastos_periodizados)
+    
+        return dict(self.cursor.fetchone())['total']
     
     def get_total_transferencias_recebidas (self, id_direcionamento) -> float:
         total_transferencias_recebidas = self.get_data(
@@ -38,6 +39,9 @@ class Direcionamento_controller (SQLite_DB_CRUD):
             "SUM(valor) AS 'total'", 
             f"id_direcionamento_destino = {id_direcionamento}"
         )
+
+        if not total_transferencias_recebidas[0]['total']:
+            return 0
 
         return total_transferencias_recebidas[0]['total']
 
@@ -48,6 +52,9 @@ class Direcionamento_controller (SQLite_DB_CRUD):
             "SUM(valor) AS 'total'", 
             f"id_direcionamento_origem = {id_direcionamento}"
         )
+
+        if not total_transferencias_enviadas[0]['total']:
+            return 0
 
         return total_transferencias_enviadas[0]['total']
 
@@ -62,7 +69,10 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
     def atualiza_saldo (self, id_direcionamento: int) -> bool:
         if self.verifica_saldo_precisa_att(id_direcionamento):
-            Historico_direcionamentos_controller().adiciona_historico_direcionamento(id_direcionamento)
+            historico_dir_controller = Historico_direcionamentos_controller()
+            historico_dir_controller.init_connection()
+            historico_dir_controller.adiciona_historico_direcionamento(id_direcionamento)
+            historico_dir_controller.close_connection()
             saldo_novo = self._calcula_saldo(id_direcionamento)
             return self.edita_saldo(id_direcionamento, saldo_novo)
         
@@ -80,7 +90,11 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
     def edita_nome_direcionamentos (self, id_direcionamento: int, novo_nome: str) -> bool:
         self.edit_data("Direcionamentos", f"nome = {novo_nome}", f"id = {id_direcionamento}")
-        return Historico_direcionamentos_controller().edit_data("Historico_direcionamentoss", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}")
+        historico_direcionamento_controller = Historico_direcionamentos_controller()
+        historico_direcionamento_controller.init_connection()
+        historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}") 
+        historico_direcionamento_controller.close_connection()
+        return historico_was_edited
 
     def _calcula_saldo (self, id_direcionamento: int) -> float:
         recebimentos = (

@@ -1,9 +1,10 @@
 
 class Transferencia_entre_bancos_model:
     def __init__ (self, id_banco_origem: int, id_banco_destino: int, 
-                  valor: float, descricao: str = ""):
+                  id_direcionamento: int, valor: float, descricao: str = ""):
         self.id_banco_origem = id_banco_origem
         self.id_banco_destino = id_banco_destino
+        self.id_direcionamento = id_direcionamento
         self.descricao = descricao
         self.valor = valor
 
@@ -36,6 +37,19 @@ class Transferencia_entre_bancos_model:
         
         self._id_banco_destino = value
     
+    @property
+    def id_direcionamento (self):
+        return self._id_direcionamento
+    
+    @id_direcionamento.setter
+    def id_direcionamento (self, value):
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError as e:
+                raise TypeError("Campo id_direcionamento tem que possuir um valor inteiro.")
+        
+        self._id_direcionamento = value
 
     @property
     def descricao (self):
@@ -78,11 +92,13 @@ class Transferencia_entre_bancos_model:
                 "id INTEGER Primary key, " +
                 "id_banco_origem INTEGER, " +
                 "id_banco_destino INTEGER, " +
+                "id_direcionamento INTEGER, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
                 "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:S', 'now')) NOT NULL, " + 
                 "Foreign key (id_banco_origem) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                "Foreign key (id_banco_destino) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }
