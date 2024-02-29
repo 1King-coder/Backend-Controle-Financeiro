@@ -1,4 +1,4 @@
-from .models.Historico_bancos_model import Historico_direcionamentos_model
+from .models.Historico_direcionamentos_model import Historico_direcionamentos_model
 
 from .DB_base_class import SQLite_DB_CRUD
 

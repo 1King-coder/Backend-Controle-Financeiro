@@ -6,9 +6,26 @@ class Gasto_periodizado_model:
         self.id_gasto = id_gasto
         self.total_parcelas = total_parcelas
         self.controle_parcelas = controle_parcelas
-        self.dia_abate = dia_abate
+        if dia_abate:
+            self.dia_abate = dia_abate
+        if descricao:
+            self.descricao = descricao
+
         self.valor_parcela = valor_parcela
         self.descricao = descricao
+    @property
+    def controle_parcelas (self) -> int:
+        return self._controle_parcelas
+    
+    @controle_parcelas.setter
+    def controle_parcelas (self, value) -> None:
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError as e:
+                raise TypeError("Campo controle_parcelas tem que possuir um valor inteiro.")
+        
+        self._controle_parcelas = value
 
     @property
     def valor_total (self) -> float:
@@ -115,10 +132,10 @@ class Gasto_periodizado_model:
                 "descricao TEXT, " +
                 "valor_parcela REAL NOT NULL, " +
                 "dia_abate TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " +
-                "numero_total_parcelas INTEGER NOT NULL, " +
+                "total_parcelas INTEGER NOT NULL, " +
                 "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
                 "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
-                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                "Foreign key (id_gasto) references Gastos_gerais(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             ) 
         }

@@ -62,7 +62,7 @@ class Gasto_imediato_model:
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
                 "created_at TEXT DEFAULT (strftime('%d-%m-%Y', 'now')) NOT NULL, " + 
-                "Foreign key (id_gasto) references Gastos_geral(id) ON DELETE CASCADE ON UPDATE CASCADE" + 
+                "Foreign key (id_gasto) references Gastos_gerais(id) ON DELETE CASCADE ON UPDATE CASCADE" + 
                 ")"
             ) 
         }

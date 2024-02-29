@@ -21,9 +21,8 @@ class Migration (SQLite_DB_CRUD):
 
         return models_list
 
-    def migrate (self):
+    def migrate (self) -> bool:
         models = self.get_models()
-
         for model in models:
             model_structure = model.structure()
             sql_create_table = (
@@ -33,25 +32,25 @@ class Migration (SQLite_DB_CRUD):
             try:
                 self.cursor.execute(sql_create_table)
                 self.connection.commit()
-                return True
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to create the table {model_structure['name']}."
                 print(err_msg)
                 log(f"{err_msg}: {e}")
                 return False
+        
+        return True
 
 def main():
-    migration = Migration("DB_teste")
+    with Migration("DB_teste") as migration:
 
-    try:
-        if not migration.migrate():
-            raise Exception(f"Error occurred when trying to execute the migration.")
+        try:
+            if not migration.migrate():
+                raise Exception(f"Error occurred when trying to execute the migration.")
 
-    except Exception as e:
-        print(e)
-        log(f"{e}")
-        return False
+        except Exception as e:
+            print(e)
+            log(f"{e}")
 
 
 if __name__ == '__main__':

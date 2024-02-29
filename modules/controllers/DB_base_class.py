@@ -2,6 +2,7 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 from copy import deepcopy
+
 from ..Log import log
 
 
@@ -82,8 +83,6 @@ class SQLite_DB_CRUD:
             + f"{columns_names} VALUES {binding_str}"
         )
 
-        print(sql_insert)
-
         try:
             self.cursor.execute(sql_insert, tuple(data.values()))
             self.connection.commit()
@@ -102,10 +101,9 @@ class SQLite_DB_CRUD:
         SELECT {command} FROM {table_name} WHERE {WHERE}
         """
 
-        if command:
+        if command and not WHERE:
             try:
                 sql_select = f"SELECT {command} FROM {table_name}"
-
                 if WHERE:
                     sql_select += f" WHERE {WHERE}"
 
@@ -131,7 +129,7 @@ class SQLite_DB_CRUD:
                 return []
 
         sql_select = (
-            f"SELECT * FROM {table_name} "
+            f"SELECT {command} FROM {table_name} "
             + f"WHERE {WHERE}"
         )
 

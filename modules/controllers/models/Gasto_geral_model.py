@@ -84,7 +84,7 @@ class Gasto_geral_model:
     @staticmethod
     def structure () -> dict:
         return {
-            'name': 'Gastos_geral',
+            'name': 'Gastos_gerais',
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "id_banco INTEGER, " +
