@@ -7,6 +7,7 @@ class Migration (SQLite_DB_CRUD):
     def __init__ (self, db_name) -> None:
         super().__init__(db_name)
 
+    @property
     def get_models (self) -> list:
         nomes_models = [
             model[:-3]
@@ -22,8 +23,8 @@ class Migration (SQLite_DB_CRUD):
         return models_list
 
     def migrate (self) -> bool:
-        models = self.get_models()
-        for model in models:
+
+        for model in self.get_models:
             model_structure = model.structure()
             sql_create_table = (
                 f"CREATE TABLE IF NOT EXISTS {model_structure['name']} {model_structure['columns']}"
@@ -32,6 +33,11 @@ class Migration (SQLite_DB_CRUD):
             try:
                 self.cursor.execute(sql_create_table)
                 self.connection.commit()
+                
+                if "trigger_script" in dir(model):
+                    trigger_script = model.trigger_script()
+                    self.cursor.execute(trigger_script)
+                    self.connection.commit()
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to create the table {model_structure['name']}."

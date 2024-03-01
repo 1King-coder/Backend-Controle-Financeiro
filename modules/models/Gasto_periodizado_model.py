@@ -135,10 +135,24 @@ class Gasto_periodizado_model:
                 "total_parcelas INTEGER NOT NULL, " +
                 "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
                 "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
                 "Foreign key (id_gasto) references Gastos_gerais(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             ) 
         }
+    
+    @staticmethod
+    def trigger_script () -> str:
+        return """
+        CREATE TRIGGER IF NOT EXISTS updated_at_Gastos_periodizados
+            AFTER UPDATE ON Gastos_periodizados
+            FOR EACH ROW
+            BEGIN
+                UPDATE Gastos_periodizados
+                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                WHERE id_gasto = OLD.id_gasto;
+            END;
+        """
 
 def main():
     teste = Gasto_periodizado_model(1, 532, 12, 0)

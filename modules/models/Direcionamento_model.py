@@ -48,3 +48,16 @@ class Direcionamento_model:
                 "updated_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL)"
             )
         }
+    
+    @staticmethod
+    def trigger_script () -> str:
+        return """
+        CREATE TRIGGER IF NOT EXISTS updated_at_Direcionamentos
+            AFTER UPDATE ON Direcionamentos
+            FOR EACH ROW
+            BEGIN
+                UPDATE Direcionamentos
+                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                WHERE id = OLD.id;
+            END;
+        """

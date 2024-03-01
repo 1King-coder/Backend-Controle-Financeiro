@@ -15,10 +15,27 @@ from modules.controllers.Transferencia_entre_direcionamentos_controller import *
 import pandas as pd
 
 
-MAIN_DB_NAME = "Controle_Financeiro_DB"
 TEST_DB_NAME = "DB_teste"
 
-def main(): ...
+def main():
+    """
+    ÁREA DE TESTES
+
+    Primeiro - crie o arquivo da base de dados.
+    Segundo - execute o arquivo migrate.py para
+              criar as tabelas e triggers.
+    Terceiro - pode fazer seus testes por aqui,
+               os controladores contam com os methods __enter__
+               e __exit__ para que haja a garantia do fechamento da
+               conexão com o banco de dados, então ao utilizar um controlador
+               recomendo fortemente que utilize context managers.
+    """
+
+    with Banco_controller(TEST_DB_NAME) as b_ctrler:
+        ...
+
+
+        
 
 if __name__ == '__main__':
     main()
@@ -26,11 +43,3 @@ if __name__ == '__main__':
     
 
 
-# with Controle_Financeiro_DB(TEST_DB_NAME) as test_db:
-#     test_db._create_controle_financeiro_tables()
-
-# CF_db = Controle_Financeiro_DB(MAIN_DB_NAME)
-
-# CF_db.init_connection()
-
-# CF_db.close_connection()

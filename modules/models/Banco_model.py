@@ -50,6 +50,20 @@ class Banco_model:
             )
         }
 
+    @staticmethod
+    def trigger_script () -> str:
+        return """
+        CREATE TRIGGER IF NOT EXISTS updated_at_Bancos
+            AFTER UPDATE ON Bancos
+            FOR EACH ROW
+            BEGIN
+                UPDATE Bancos
+                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                WHERE id = OLD.id;
+            END;
+        """
+
+
 def main():
     teste = Banco_model("teste")
     print(teste.dados_banco)
