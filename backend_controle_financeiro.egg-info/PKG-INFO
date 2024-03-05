@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: backend_controle_financeiro
-Version: 1.0.0
+Version: 1.0.1
 Requires-Dist: pandas_datareader
 Requires-Dist: pandas
 Requires-Dist: matplotlib
