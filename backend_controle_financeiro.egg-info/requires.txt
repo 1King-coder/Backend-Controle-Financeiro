@@ -1,4 +1,0 @@
-pandas_datareader
-pandas
-matplotlib
-numpy
