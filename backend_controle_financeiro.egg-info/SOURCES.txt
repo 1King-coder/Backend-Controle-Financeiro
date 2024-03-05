@@ -1,0 +1,7 @@
+README.md
+setup.py
+backend_controle_financeiro.egg-info/PKG-INFO
+backend_controle_financeiro.egg-info/SOURCES.txt
+backend_controle_financeiro.egg-info/dependency_links.txt
+backend_controle_financeiro.egg-info/requires.txt
+backend_controle_financeiro.egg-info/top_level.txt
