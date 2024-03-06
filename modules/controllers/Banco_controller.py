@@ -71,7 +71,7 @@ class Banco_controller (SQLite_DB_CRUD):
     def get_id_banco (self, nome_banco: str = "", saldo: float = 0) -> int:
 
         if nome_banco:
-            return self.get_data("Bancos", "id", f"nome = {nome_banco}")[0]['id']
+            return self.get_data("Bancos", "id", f"nome = '{nome_banco}'")[0]['id']
         
         if saldo:
             return self.get_data("Bancos", "id", f"saldo = {saldo}")[0]['id']
