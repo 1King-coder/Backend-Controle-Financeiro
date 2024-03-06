@@ -15,11 +15,14 @@ class SQLite_DB_CRUD:
         db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name
 
         try:
+            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name
+
             self.connection = sqlite3.connect(db_path)
             self.connection.row_factory = sqlite3.Row
             self.cursor = self.connection.cursor()
             self.cursor.execute("PRAGMA foreign_keys = ON;")
             self.connection.commit()
+            self.cursor.close()
 
         except Exception as e:
             err_msg = f"Error occurred when trying to connect to database ({self.db_name})."
@@ -29,7 +32,6 @@ class SQLite_DB_CRUD:
 
     def close_connection (self) -> None:
         try:
-            self.cursor.close()
             self.connection.close()
 
         except Exception as e:
@@ -49,13 +51,15 @@ class SQLite_DB_CRUD:
         return [dict(entity) for entity in dataset]
 
     def _extract_columns_names (self, table_name) -> list:
+        self.cursor = self.connection.cursor()
+
         sql_pragma = f"PRAGMA table_info([{table_name}])"
 
         try:
             self.cursor.execute(sql_pragma)
 
             columns_names = [column[1] for column in self.cursor.fetchall()]
-
+            self.cursor.close()
             return columns_names
         
         except Exception as e:
@@ -70,6 +74,7 @@ class SQLite_DB_CRUD:
         INSERT INTO {table_name} {tuple(data.keys())} 
         VALUES {tuple(data.values())}
         """
+        self.cursor = self.connection.cursor()
 
         columns_names = tuple(data.keys())
 
@@ -86,10 +91,12 @@ class SQLite_DB_CRUD:
         try:
             self.cursor.execute(sql_insert, tuple(data.values()))
             self.connection.commit()
+            self.cursor.close()
 
             return True
         
         except Exception as e:
+            self.cursor.close()
             err_msg = f"Error occurred when trying to insert data in the table ({table_name})."
             print(err_msg)
             log(f"{err_msg}: {e}")
@@ -100,6 +107,7 @@ class SQLite_DB_CRUD:
         Equivalent to:
         SELECT {command} FROM {table_name} WHERE {WHERE}
         """
+        self.cursor = self.connection.cursor()
 
         if command and not WHERE:
             try:
@@ -108,7 +116,10 @@ class SQLite_DB_CRUD:
                     sql_select += f" WHERE {WHERE}"
 
                 self.cursor.execute(sql_select)
-                return self._organize_data_in_dictionary(self.cursor.fetchall())
+                data = self._organize_data_in_dictionary(self.cursor.fetchall())
+                self.cursor.close()
+                return data
+            
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to retrieve data from the table with command ({table_name})."
@@ -120,12 +131,14 @@ class SQLite_DB_CRUD:
             try:
                 self.cursor.execute(f"SELECT * FROM {table_name}")
                 
-                return self._organize_data_in_dictionary(self.cursor.fetchall())
-            
+                data  = self._organize_data_in_dictionary(self.cursor.fetchall())
+                self.cursor.close()
+
             except Exception as e:
                 err_msg = f"Error occurred when trying to retrieve data from the table ({table_name})."
                 print(err_msg)
                 log(f"{err_msg}: {e}")
+                self.cursor.close()
                 return []
 
         sql_select = (
@@ -135,12 +148,15 @@ class SQLite_DB_CRUD:
 
         try:
             self.cursor.execute(sql_select)
-            return self._organize_data_in_dictionary(self.cursor.fetchall())
+            data = self._organize_data_in_dictionary(self.cursor.fetchall())
+            self.cursor.close()
+            return data
 
         except Exception as e:
             err_msg = f"Error occurred when trying to retrieve data from the table ({table_name})."
             print(err_msg)
             log(f"{err_msg}: {e}")
+            self.cursor.close()
             return []
 
     def edit_data (self, table_name: str, change_cmd: str, WHERE: str) -> bool:
@@ -148,6 +164,8 @@ class SQLite_DB_CRUD:
         Equivalent to:
         UPDATE {table_name} SET {change_cmd} WHERE {WHERE};
         """
+        self.cursor = self.connection.cursor()
+
         sql_update = (
             f"UPDATE {table_name} SET {change_cmd} " +
             f"WHERE {WHERE}"
@@ -156,11 +174,13 @@ class SQLite_DB_CRUD:
         try:
             self.cursor.execute(sql_update)
             self.connection.commit()
+            self.cursor.close()
             return True
         except Exception as e:
             err_msg = f"Error occurred when trying to update data from the table ({table_name})."
             print(err_msg)
             log(f"{err_msg}: {e}")
+            self.cursor.close()
             return False
 
     def delete_data (self, table_name: str, WHERE: str = "") -> bool:
@@ -168,6 +188,8 @@ class SQLite_DB_CRUD:
         Equivalent to:
         DELETE FROM {table_name} WHERE {WHERE}
         """
+        self.cursor = self.connection.cursor()
+
         if not WHERE:
             try:
                 err_msg = f"Cannot execute an DELETE without WHERE clausule. table: ({table_name})."
@@ -175,6 +197,7 @@ class SQLite_DB_CRUD:
             except ReferenceError as e:
                 print(err_msg)
                 log(f"{err_msg}: {e}")
+                self.cursor.close()
                 return False
         
         sql_delete = (
@@ -184,11 +207,13 @@ class SQLite_DB_CRUD:
         try:
             self.cursor.execute(sql_delete)
             self.connection.commit()
+            self.cursor.close()
             return True
         except Exception as e:
             err_msg = f"Error occurred when trying to delete data from the table ({table_name})."
             print(err_msg)
             log(f"{err_msg}: {e}")
+            self.cursor.close()
             return False
 
     

@@ -107,6 +107,8 @@ class Banco_controller (SQLite_DB_CRUD):
             saldo_novo = self._calcula_saldo(id_banco)
             return self.edita_saldo(id_banco, saldo_novo)
         
+        historico_banco_controller.close_connection()
+        
         return False
 
     def _calcula_saldo (self, id_banco: int) -> float:
