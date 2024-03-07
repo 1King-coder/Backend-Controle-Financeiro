@@ -65,9 +65,12 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
     
     def get_tipo_gasto (self, id_gasto: int) -> str:
 
-        descricao = self.get_data("Gastos_gerais", "descricao", f"id = {id_gasto}")[0]['descricao']
+        tipo_gasto = self.get_data("Gastos_gerais", "tipo_gasto", f"id = {id_gasto}")
 
-        return descricao
+        if tipo_gasto:
+            return tipo_gasto[0]['tipo_gasto']
+
+        return None
 
     def deletar (self, id_gasto: int) -> bool:
         return self.delete_data("Gastos_gerais", f"id = {id_gasto}")

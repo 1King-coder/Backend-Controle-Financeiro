@@ -91,10 +91,18 @@ class Direcionamento_controller (SQLite_DB_CRUD):
     def get_id_direcionamento (self, nome_direcionamento: str = "", saldo: float = 0) -> int:
 
         if nome_direcionamento:
-            return self.get_data("Direcionamentos", "id", f"nome = {nome_direcionamento}")[0]['id']
+            direcionamento = self.get_data("Direcionamentos", "id", f"nome = '{nome_direcionamento}'")
+            if direcionamento:
+                return direcionamento[0]['id']
+            
+            return None
         
         if saldo:
-            return self.get_data("Direcionamentos", "id", f"saldo = {saldo}")[0]['id']
+            direcionamento = self.get_data("Direcionamentos", "id", f"saldo = {saldo}")
+            if direcionamento:
+                return direcionamento[0]['id']
+            
+            return None
         
         return None
 
