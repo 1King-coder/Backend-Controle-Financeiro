@@ -79,7 +79,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
     def atualizar (self, id_direcionamento: int) -> bool:
         if self.verifica_saldo_precisa_att(id_direcionamento):
-            historico_dir_controller = Historico_direcionamentos_controller()
+            historico_dir_controller = Historico_direcionamentos_controller(self.db_name)
             historico_dir_controller.init_connection()
             historico_dir_controller.adiciona_historico_direcionamento(id_direcionamento)
             historico_dir_controller.close_connection()
@@ -100,7 +100,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
 
     def edita_nome_direcionamentos (self, id_direcionamento: int, novo_nome: str) -> bool:
         self.edit_data("Direcionamentos", f"nome = {novo_nome}", f"id = {id_direcionamento}")
-        historico_direcionamento_controller = Historico_direcionamentos_controller()
+        historico_direcionamento_controller = Historico_direcionamentos_controller(self.db_name)
         historico_direcionamento_controller.init_connection()
         historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}") 
         historico_direcionamento_controller.close_connection()
