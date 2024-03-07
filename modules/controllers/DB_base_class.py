@@ -14,7 +14,8 @@ class SQLite_DB_CRUD:
     def init_connection (self) -> None:
 
         try:
-            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name + ".sqlite3"
+            db_name = self.db_name + ".sqlite3"
+            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / db_name
 
             self.connection = sqlite3.connect(db_path)
             self.connection.row_factory = sqlite3.Row
