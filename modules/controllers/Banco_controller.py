@@ -87,7 +87,7 @@ class Banco_controller (SQLite_DB_CRUD):
         return None
 
     def edita_nome_banco (self, id_banco, novo_nome: str) -> bool:
-        self.edit_data("Bancos", f"nome = {novo_nome}", f"id = {id_banco}")
+        self.edit_data("Bancos", f"nome = '{novo_nome}'", f"id = {id_banco}")
         historico_banco_controller = Historico_bancos_controller(self.db_name)
         historico_banco_controller.init_connection()
         historico_was_edited = historico_banco_controller.edit_data("Historico_bancos", f"nome = '{novo_nome}'", f"id_banco = {id_banco}") 
