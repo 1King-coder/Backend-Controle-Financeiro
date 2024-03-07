@@ -107,10 +107,10 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         return None
 
     def edita_nome_direcionamentos (self, id_direcionamento: int, novo_nome: str) -> bool:
-        self.edit_data("Direcionamentos", f"nome = {novo_nome}", f"id = {id_direcionamento}")
+        self.edit_data("Direcionamentos", f"nome = '{novo_nome}'", f"id = {id_direcionamento}")
         historico_direcionamento_controller = Historico_direcionamentos_controller(self.db_name)
         historico_direcionamento_controller.init_connection()
-        historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}") 
+        historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = '{novo_nome}'", f"id_direcionamento = {id_direcionamento}") 
         return historico_was_edited
 
     def _calcula_saldo (self, id_direcionamento: int) -> float:
