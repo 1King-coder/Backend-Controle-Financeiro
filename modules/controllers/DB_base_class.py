@@ -9,13 +9,12 @@ from ..Log import log
 class SQLite_DB_CRUD:
 
     def __init__ (self, db_name: str) -> None:        
-        self.db_name = db_name + ".sqlite3"
+        self.db_name = db_name
 
     def init_connection (self) -> None:
-        db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name
 
         try:
-            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name
+            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / self.db_name + ".sqlite3"
 
             self.connection = sqlite3.connect(db_path)
             self.connection.row_factory = sqlite3.Row
