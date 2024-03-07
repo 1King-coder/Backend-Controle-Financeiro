@@ -90,8 +90,8 @@ class Banco_controller (SQLite_DB_CRUD):
         self.edit_data("Bancos", f"nome = {novo_nome}", f"id = {id_banco}")
         historico_banco_controller = Historico_bancos_controller(self.db_name)
         historico_banco_controller.init_connection()
-        historico_was_edited = historico_banco_controller.edit_data("Historico_bancos", f"nome = {novo_nome}", f"id_banco = {id_banco}") 
-        historico_banco_controller.close_connection()
+        historico_was_edited = historico_banco_controller.edit_data("Historico_bancos", f"nome = '{novo_nome}'", f"id_banco = {id_banco}") 
+        
         return historico_was_edited        
 
     def edita_saldo (self, id_banco: int, novo_saldo: float) -> bool:
@@ -103,11 +103,11 @@ class Banco_controller (SQLite_DB_CRUD):
             historico_banco_controller = Historico_bancos_controller(self.db_name)
             historico_banco_controller.init_connection()
             historico_banco_controller.adiciona_historico_banco(id_banco)
-            historico_banco_controller.close_connection()
+            
             saldo_novo = self._calcula_saldo(id_banco)
             return self.edita_saldo(id_banco, saldo_novo)
         
-        historico_banco_controller.close_connection()
+        
         
         return False
 

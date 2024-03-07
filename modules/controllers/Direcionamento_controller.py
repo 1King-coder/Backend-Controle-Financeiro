@@ -103,7 +103,6 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         historico_direcionamento_controller = Historico_direcionamentos_controller(self.db_name)
         historico_direcionamento_controller.init_connection()
         historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = {novo_nome}", f"id_direcionamento = {id_direcionamento}") 
-        historico_direcionamento_controller.close_connection()
         return historico_was_edited
 
     def _calcula_saldo (self, id_direcionamento: int) -> float:
