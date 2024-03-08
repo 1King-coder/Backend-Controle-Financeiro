@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from modules.routes.Bancos_R import init_routes as init_routes_bancos
 from modules.routes.Direcionamentos_R import init_routes as init_routes_direcionamentos
 from modules.routes.Depositos_R import init_routes as init_routes_depositos
+from modules.routes.Gastos_gerais_R import init_routes as init_routes_gastos_gerais
 
 import pandas as pd
 
@@ -19,7 +20,8 @@ app = FastAPI(
 routes = [
     init_routes_bancos,
     init_routes_direcionamentos,
-    init_routes_depositos
+    init_routes_depositos,
+    init_routes_gastos_gerais
 ]
 
 for route in routes:

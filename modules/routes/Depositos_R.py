@@ -88,28 +88,27 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar o valor do depósito")
 
         try:
-            if req.get('novo_valor'):    
+            request(
+                "PATCH",
+                f"http://localhost:8000/bancos/{dados_deposito['id_banco']}",
+            )
+
+            request(
+                "PATCH",
+                f"http://localhost:8000/direcionamentos/{dados_deposito['id_direcionamento']}",
+            )
+
+            if req.get('novo_id_banco'):
                 request(
                     "PATCH",
-                    f"http://localhost:8000/bancos/{dados_deposito['id_banco']}",
+                    f"http://localhost:8000/bancos/{req['novo_id_banco']}",
                 )
 
+            if req.get('novo_id_direcionamento'):
                 request(
                     "PATCH",
-                    f"http://localhost:8000/direcionamentos/{dados_deposito['id_direcionamento']}",
+                    f"http://localhost:8000/direcionamentos/{req['novo_id_direcionamento']}",
                 )
-
-                if req.get('novo_id_banco'):
-                    request(
-                        "PATCH",
-                        f"http://localhost:8000/bancos/{req['novo_id_banco']}",
-                    )
-
-                if req.get('novo_id_direcionamento'):
-                    request(
-                        "PATCH",
-                        f"http://localhost:8000/direcionamentos/{req['novo_id_direcionamento']}",
-                    )
                 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")

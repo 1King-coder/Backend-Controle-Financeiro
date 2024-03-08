@@ -78,11 +78,11 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         atual_controle_parcelas = self.get_controle_parcelas(id_gasto)
         total_parcelas = self.get_total_parcelas(id_gasto)
 
-        dif_controle_novo_e_total = novo_controle_parcelas - total_parcelas
+        dif_controle_novo_e_total = total_parcelas - novo_controle_parcelas 
 
         if atual_controle_parcelas == total_parcelas:
             print(f"Parcelas já pagas id_gasto = {id_gasto}")
-            return False
+            return 2
         
         if dif_controle_novo_e_total < 0:
             return self.edit_data(
@@ -90,7 +90,7 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
                 f"controle_parcelas = {novo_controle_parcelas + dif_controle_novo_e_total}",
                 f"id_gasto = {id_gasto}"
             )
-
+        
         return self.edit_data(
             "Gastos_periodizados",
             f"controle_parcelas = {novo_controle_parcelas}",

@@ -56,6 +56,16 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
 
         return False
     
+    def get_dados (self, id_gasto: int) -> dict:
+
+        dados_gasto = self.get_data("Gastos_gerais", "*", WHERE=f"id = {id_gasto}")
+
+        if not dados_gasto:
+            return None
+        
+        return dados_gasto[0]
+        
+    
     def get_id (self, descricao: str) -> int:
         return self.get_data(
             "Gastos_gerais",
@@ -80,7 +90,7 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
                            nova_descricao: str = "", novo_id_banco: int = 0,
                            novo_id_direcionamento: int = 0) -> bool:
         
-        nova_descricao += f" {self.cursor.lastrowid}"
+        
 
 
         novos_dados = {
@@ -107,7 +117,7 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
 
         edit_command = edit_command[:-2]
 
-        if self.edit_data("Gastos_geral", edit_command, f"id = {id_gasto}") and tipo_gasto == "imediato":
+        if self.edit_data("Gastos_gerais", edit_command, f"id = {id_gasto}") and tipo_gasto == "imediato":
             if not novo_id_banco and not novo_id_direcionamento:
                 self.edit_data("Gastos_imediatos", edit_command, f"id_gasto = {id_gasto}")
             return True
