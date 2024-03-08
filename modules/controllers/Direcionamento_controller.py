@@ -87,6 +87,14 @@ class Direcionamento_controller (SQLite_DB_CRUD):
             return self.editar(id_direcionamento, saldo_novo)
         
         return False
+    
+    def get_dados_direcionamento (self, id_direcionamento: int):
+        dados_direcionamento = self.get_data("Direcionamentos", "nome, saldo", f"id = {id_direcionamento}")
+
+        if not dados_direcionamento:
+            return None
+        
+        return dados_direcionamento[0]
  
     def get_id_direcionamento (self, nome_direcionamento: str = "", saldo: float = 0) -> int:
 
@@ -112,6 +120,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         historico_direcionamento_controller.init_connection()
         historico_was_edited = historico_direcionamento_controller.edit_data("Historico_direcionamentos", f"nome = '{novo_nome}'", f"id_direcionamento = {id_direcionamento}") 
         return historico_was_edited
+    
 
     def _calcula_saldo (self, id_direcionamento: int) -> float:
         recebimentos = (
@@ -137,8 +146,13 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         return saldo_atual != saldo_calculado
 
     def adiciona_direcionamento(self, nome_direcionamento: str) -> bool:
+        nome_direcionamento = nome_direcionamento.strip()
 
+        if self.get_id_direcionamento(nome_direcionamento):
+            return False
+        
         novo_direcionamento = Direcionamento_model(nome_direcionamento)
+
 
         return self.insert_data("Direcionamentos", novo_direcionamento.dados)
     

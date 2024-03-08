@@ -1,8 +1,8 @@
 import sqlite3
 from pathlib import Path
 from random import randint
-from modules.controllers.DB_base_class import SQLite_DB_CRUD
-from datetime import datetime, timedelta
+from fastapi import FastAPI
+
 from modules.controllers.Banco_controller import Banco_controller
 from modules.controllers.Direcionamento_controller import Direcionamento_controller
 from modules.controllers.Deposito_controller import Deposito_controller
@@ -12,6 +12,10 @@ from modules.controllers.Historico_bancos_controller import Historico_bancos_con
 from modules.controllers.Historico_direcionamentos_controller import Historico_direcionamentos_controller
 from modules.controllers.Transferencia_entre_bancos_controller import Transferencia_entre_bancos_controller
 from modules.controllers.Transferencia_entre_direcionamentos_controller import Transferencia_entre_direcionamentos_controller
+from modules.routes.Bancos_R import init_routes as init_routes_bancos
+from modules.routes.Direcionamentos_R import init_routes as init_routes_direcionamentos
+
+
 import pandas as pd
 
 Banco_C = Banco_controller
@@ -25,6 +29,18 @@ Transferencia_entre_bancos_C = Transferencia_entre_bancos_controller
 Transferencia_entre_direcionamentos_C = Transferencia_entre_direcionamentos_controller
 
 TEST_DB_NAME = "DB_teste"
+
+app = FastAPI(
+    title="API Controle Financeiro",
+    version="1.0.0",
+)
+
+routes = [
+    init_routes_bancos,
+    init_routes_direcionamentos]
+
+for route in routes:
+    route(app, db_name=TEST_DB_NAME)
 
 def main():
     """

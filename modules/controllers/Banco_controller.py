@@ -8,6 +8,7 @@ class Banco_controller (SQLite_DB_CRUD):
     def __init__ (self, db_name: str) -> None:
         super().__init__(db_name)
 
+
     def mostrar (self) -> list:
         return self.get_data(
             "Bancos"
@@ -67,6 +68,13 @@ class Banco_controller (SQLite_DB_CRUD):
         saldo = self.get_data("Bancos", command="saldo", WHERE=f"id = {id_banco}" )
 
         return saldo[0]['saldo']
+    
+    def get_dados_banco (self, id_banco) -> int:
+        dados_banco = self.get_data("Bancos", "nome, saldo", f"id = {id_banco}")
+        if not dados_banco:
+            return None
+        
+        return dados_banco[0]
 
     def get_id_banco (self, nome_banco: str = "", saldo: float = 0) -> int:
 
@@ -135,6 +143,11 @@ class Banco_controller (SQLite_DB_CRUD):
         return saldo_atual != saldo_calculado
 
     def adiciona_banco(self, nome_banco: str) -> bool:
+
+        nome_banco = nome_banco.strip()
+
+        if self.get_id_banco(nome_banco):
+            return False
 
         novo_banco = Banco_model(nome_banco)
 

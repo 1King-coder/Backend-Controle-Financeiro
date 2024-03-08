@@ -11,13 +11,15 @@ class SQLite_DB_CRUD:
     def __init__ (self, db_name: str) -> None:        
         self.db_name = db_name
 
+        self.init_connection()
+
     def init_connection (self) -> None:
 
         try:
             db_name = self.db_name + ".sqlite3"
             db_path = Path(__file__).parent.parent.parent.joinpath("DB") / db_name
 
-            self.connection = sqlite3.connect(db_path)
+            self.connection = sqlite3.connect(db_path, check_same_thread=False)
             self.connection.row_factory = sqlite3.Row
             self.cursor = self.connection.cursor()
             self.cursor.execute("PRAGMA foreign_keys = ON;")
@@ -133,6 +135,8 @@ class SQLite_DB_CRUD:
                 
                 data  = self._organize_data_in_dictionary(self.cursor.fetchall())
                 self.cursor.close()
+
+                return data
 
             except Exception as e:
                 err_msg = f"Error occurred when trying to retrieve data from the table ({table_name})."
