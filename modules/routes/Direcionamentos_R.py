@@ -40,10 +40,11 @@ def init_routes(app, db_name: str):
 
     @app.put("/direcionamentos/{id_direcionamento}")
     def editar_direcionamento(id_direcionamento: int, req: dict):
+
         if not Direcionamento_C.get_dados_direcionamento(id_direcionamento):
             raise HTTPException(status_code=404, detail="Direcionamento não encontrado")
 
-        if not Direcionamento_C.edita_nome_direcionamentos(id_direcionamento, req['nome_direcionamento']):
+        if not Direcionamento_C.edita_nome_direcionamentos(id_direcionamento, req['novo_nome']):
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar o direcionamento")
 
         return Response(
@@ -60,7 +61,7 @@ def init_routes(app, db_name: str):
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao excluir o direcionamento")
         
         return Response(
-            content={"message": "Direcionamento excluído com sucesso"},
+            content=json.dumps({"message": "Direcionamento excluído com sucesso"}),
             media_type="application/json"
         )
 
