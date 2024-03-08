@@ -26,7 +26,7 @@ class Deposito_controller (SQLite_DB_CRUD):
         tipo de gasto.
         """
 
-        descricao += f" {self.cursor.lastrowid}"
+        descricao += f" {self.mostrar()[-1]['id']}"
 
         deposito = Deposito_model(
             id_banco, id_direcionamento,
@@ -37,6 +37,25 @@ class Deposito_controller (SQLite_DB_CRUD):
             "Depositos",
             deposito.dados
         )
+    
+    def get_dados_deposito (self, id_deposito: int) -> dict:
+        """
+        Retorna os dados do depósito de acordo com o ID passado.
+
+        Retorna uma lista vazia se o depósito não for encontrado.
+        """
+        dados_deposito = self.get_data(
+            "Depositos",
+            "*",
+            f"id = {id_deposito}"
+        )
+        if not dados_deposito:
+            return None
+        
+        return  dados_deposito[0]
+
+
+
     
     def get_deposito_id (self, descricao: str) -> int:
         return self.get_data(
@@ -72,9 +91,7 @@ class Deposito_controller (SQLite_DB_CRUD):
 
         edit_command = edit_command[:-2]
 
-        if self.edit_data("Deposito", edit_command, f"id = {id_deposito}"):
-            if not novo_id_banco and not novo_id_direcionamento:
-                self.edit_data("Depositos", edit_command, f"id_deposito = {id_deposito}")
+        if self.edit_data("Depositos", edit_command, f"id = {id_deposito}"):
             return True
         
         return False

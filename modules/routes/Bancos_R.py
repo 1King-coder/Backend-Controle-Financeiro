@@ -53,5 +53,14 @@ def init_routes (app, db_name: str) -> None:
 
         return Response(content=json.dumps({"message": "Banco excluído com sucesso"}), media_type="application/json")
 
+    @app.patch("/bancos/{id_banco}")
+    def atualiza_saldo_banco(id_banco: int):
 
+        if not Banco_C.get_dados_banco(id_banco):
+            raise HTTPException(status_code=404, detail="Banco não encontrado")
+        
+        if not Banco_C.atualiza_saldo(id_banco):
+            raise HTTPException(status_code=500, detail="Ocorreu um erro ao atualizar o saldo")
+        
+        return Response(content=json.dumps({"message": "Saldo atualizado com sucesso"}), media_type="application/json")
 
