@@ -50,6 +50,7 @@ def init_routes(app: FastAPI, db_name: str) -> None:
         return Response(
             content=json.dumps({"message": "Transferência entre bancos adicionada com sucesso"}),
             media_type="application/json",
+            status_code=201
         )
 
     @app.put("/transferencias_entre_bancos/{id_transf}")

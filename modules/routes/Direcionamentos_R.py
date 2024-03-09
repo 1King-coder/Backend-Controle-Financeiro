@@ -47,7 +47,8 @@ def init_routes(app, db_name: str):
 
         return Response(
             content=json.dumps({"message": "Direcionamento adicionado com sucesso"}),
-            media_type="application/json"
+            media_type="application/json",
+            status_code=201 
         )
 
     @app.put("/direcionamentos/{id_direcionamento}")
