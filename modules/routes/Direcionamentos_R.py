@@ -26,7 +26,7 @@ def init_routes(app, db_name: str):
             media_type="application/json"
         )
     
-    @app.get("/direcionamentos/{nome_direcionamento}")
+    @app.get("/direcionamentos/get-id/{nome_direcionamento}")
     def id_direcionamento_por_nome(nome_direcionamento: str):
         id_direcionamento = Direcionamento_C.get_id_direcionamento(nome_direcionamento)
 
