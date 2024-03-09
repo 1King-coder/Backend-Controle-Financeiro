@@ -21,6 +21,18 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
             "id",
             f"descricao = {descricao}"
         )
+    
+    def get_dados (self, id_transf: int) -> dict:
+        dados = self.get_data(
+            "Transferencias_entre_bancos",
+            "*",
+            f"id = {id_transf}"
+        )
+
+        if not dados:
+            return None
+        
+        return dados[0]
 
     def adicionar (self, id_banco_origem: int, id_banco_destino: int,
                    id_direcionamento: int, valor: float, descricao: str = "") -> bool:

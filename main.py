@@ -7,6 +7,9 @@ from modules.routes.Bancos_R import init_routes as init_routes_bancos
 from modules.routes.Direcionamentos_R import init_routes as init_routes_direcionamentos
 from modules.routes.Depositos_R import init_routes as init_routes_depositos
 from modules.routes.Gastos_gerais_R import init_routes as init_routes_gastos_gerais
+from modules.routes.Gastos_periodizados_R import init_routes as init_routes_gastos_periodizados
+from modules.routes.Transferencia_bancos_R import init_routes as init_routes_transferencias_bancos
+from modules.routes.Transferencia_direcionamentos_R import init_routes as init_routes_transferencias_direcionamentos
 
 import pandas as pd
 
@@ -21,7 +24,10 @@ routes = [
     init_routes_bancos,
     init_routes_direcionamentos,
     init_routes_depositos,
-    init_routes_gastos_gerais
+    init_routes_gastos_gerais,
+    init_routes_gastos_periodizados,
+    init_routes_transferencias_bancos,
+    init_routes_transferencias_direcionamentos
 ]
 
 for route in routes:

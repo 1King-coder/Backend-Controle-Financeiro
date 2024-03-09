@@ -21,14 +21,26 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
             "id",
             f"descricao = {descricao}"
         )
+    
+    def get_dados (self, id_transf: int) -> dict:
+        dados = self.get_data(
+            "Transferencias_entre_direcionamentos",
+            "*",
+            f"id = {id_transf}"
+        )
 
-    def adicionar (self, id_direcionamento_origem: int, id_direcionamento_destino: int, valor: float, descricao: str = "") -> bool:
+        if not dados:
+            return None
+        
+        return dados[0]
+
+    def adicionar (self, id_direcionamento_origem: int, id_direcionamento_destino: int, id_banco: int,valor: float, descricao: str = "") -> bool:
 
         if not descricao:
             descricao = f"Transferência {self.cursor.lastrowid}"
 
         transf_entre_direcionamentos_model = Transferencia_entre_direcionamentos_model(
-            id_direcionamento_origem, id_direcionamento_destino,
+            id_direcionamento_origem, id_direcionamento_destino, id_banco,
             valor, descricao
         )
 
@@ -38,12 +50,13 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
         )
 
     def editar (self, id_transf: int, novo_id_direcionamento_origem: int = 0,
-                novo_id_direcionamento_destino: int = 0, novo_valor: float = 0,
-                nova_descricao: str = "") -> bool:     
+                novo_id_direcionamento_destino: int = 0, novo_id_banco: int = 0,
+                novo_valor: float = 0, nova_descricao: str = "") -> bool:     
         
         novos_dados = {
             'valor': novo_valor,
             'descricao': nova_descricao,
+            'id_banco': novo_id_banco,
             'id_banco_destino': novo_id_direcionamento_destino,
             'id_banco_origem': novo_id_direcionamento_origem
         }

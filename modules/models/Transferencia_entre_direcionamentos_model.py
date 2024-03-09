@@ -1,9 +1,10 @@
 
 class Transferencia_entre_direcionamentos_model:
     def __init__ (self, id_direcionamento_origem: int, id_direcionamento_destino: int, 
-                  valor: float, descricao: str = ""):
+                  id_banco: int, valor: float, descricao: str = ""):
         self.id_direcionamento_origem = id_direcionamento_origem
         self.id_direcionamento_destino = id_direcionamento_destino
+        self.id_banco = id_banco
         self.descricao = descricao
         self.valor = valor
 
@@ -35,6 +36,20 @@ class Transferencia_entre_direcionamentos_model:
                 raise TypeError("Campo id_direcionamento_destino tem que possuir um valor inteiro.")
         
         self._id_direcionamento_destino = value
+
+    @property
+    def id_banco (self):
+        return self._id_banco
+    
+    @id_banco.setter
+    def id_banco (self, value):
+        if not isinstance(value, int):
+            try:
+                value = int(value)
+            except ValueError as e:
+                raise TypeError("Campo id_banco tem que possuir um valor inteiro.")
+        
+        self._id_banco = value
     
 
     @property
@@ -78,11 +93,13 @@ class Transferencia_entre_direcionamentos_model:
                 "id INTEGER Primary key, " +
                 "id_direcionamento_origem INTEGER, " +
                 "id_direcionamento_destino INTEGER, " +
+                "id_banco INTEGER, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
                 "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
                 "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
-                "Foreign key (id_direcionamento_destino) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
+                "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
+                "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )
         }

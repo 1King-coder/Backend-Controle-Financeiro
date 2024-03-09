@@ -68,11 +68,16 @@ def init_routes(app, db_name: str):
     @app.patch("/direcionamentos/{id_direcionamento}")
     def atualizar_saldo_direcionamento(id_direcionamento: int):
 
-        if not Direcionamento_C.get_dados_direcionamento(id_direcionamento):
+        dados_direcionamento = Direcionamento_C.get_dados_direcionamento(id_direcionamento)
+
+        if not dados_direcionamento:
             raise HTTPException(status_code=404, detail="Direcionamento não encontrado")
         
         if not Direcionamento_C.atualizar(id_direcionamento):
-            raise HTTPException(status_code=500, detail="Ocorreu um erro ao atualizar o direcionamento")
+            return Response(
+                status_code= 208,
+                content=json.dumps({"message": f"O Direcionamento {dados_direcionamento['nome']} não precisa ter seu saldo atualizado."}),
+            )
         
         return Response(
             content=json.dumps({"message": "Direcionamento atualizado com sucesso"}),

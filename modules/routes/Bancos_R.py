@@ -56,11 +56,16 @@ def init_routes (app, db_name: str) -> None:
     @app.patch("/bancos/{id_banco}")
     def atualiza_saldo_banco(id_banco: int):
 
-        if not Banco_C.get_dados_banco(id_banco):
+        dados_banco = Banco_C.get_dados_banco(id_banco)
+
+        if not dados_banco:
             raise HTTPException(status_code=404, detail="Banco não encontrado")
         
         if not Banco_C.atualiza_saldo(id_banco):
-            raise HTTPException(status_code=500, detail="Ocorreu um erro ao atualizar o saldo")
+            return Response(
+                status_code= 208,
+                content=json.dumps({"message": f"O Banco {dados_banco['nome']} não precisa ter seu saldo atualizado."}),
+            )
         
         return Response(content=json.dumps({"message": "Saldo atualizado com sucesso"}), media_type="application/json")
 

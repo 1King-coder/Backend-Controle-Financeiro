@@ -1,6 +1,7 @@
 
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_periodizado_model import Gasto_periodizado_model
+from requests import request
 from .DB_base_class import SQLite_DB_CRUD
 from pandas import DataFrame
 
@@ -22,10 +23,11 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
     def get_dados (self, id_gasto: int, dados_desejados: str = "*") -> dict:
 
         dados_gasto = self.get_data("Gastos_periodizados", dados_desejados.strip(), f"id_gasto = {id_gasto}")
-        if "," in dados_desejados:
-            return dados_gasto[0]
+        
+        if not dados_gasto:
+            return None
 
-        return dados_gasto[0][dados_desejados.strip()]
+        return dados_gasto[0]
     
     def adicionar (self, id_banco:int,
                                     id_direcionamento: int, valor_parcela: float, 
@@ -55,19 +57,28 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         dia_abate = self.get_dados(
             id_gasto, "dia_abate"
         )
-        return dia_abate
+        if not dia_abate:
+            return None
+
+        return dia_abate['dia_abate']
     
     def get_total_parcelas (self, id_gasto: int) -> int:
         total_parcelas = self.get_dados(
             id_gasto, "total_parcelas"
         )
-        return total_parcelas
+        if not total_parcelas:
+            return None
+
+        return total_parcelas['total_parcelas']
 
     def get_controle_parcelas (self, id_gasto: int) -> int:
         controle_parcelas = self.get_dados(
             id_gasto, "controle_parcelas"
         )
-        return controle_parcelas
+        if not controle_parcelas:
+            return None
+
+        return controle_parcelas['controle_parcelas']
 
     def atualiza_controle_parcelas (self, id_gasto: int, qtd_dias_parcela: int) -> bool:
         dia_atual = datetime.now()
@@ -78,11 +89,13 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         atual_controle_parcelas = self.get_controle_parcelas(id_gasto)
         total_parcelas = self.get_total_parcelas(id_gasto)
 
-        dif_controle_novo_e_total = total_parcelas - novo_controle_parcelas 
+        dif_controle_novo_e_total = total_parcelas - novo_controle_parcelas
 
         if atual_controle_parcelas == total_parcelas:
-            print(f"Parcelas já pagas id_gasto = {id_gasto}")
             return 2
+        
+        if atual_controle_parcelas == novo_controle_parcelas:
+            return False
         
         if dif_controle_novo_e_total < 0:
             return self.edit_data(
@@ -101,15 +114,16 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
                            id_gasto: int, novo_valor: float = 0,
                            nova_descricao: str = "", novo_id_banco: int = 0,
                            novo_id_direcionamento: int = 0, novo_total_parcelas: int = 0,
-                           novo_dia_abate: str = "") -> bool:
+                           novo_controle_parcelas: int = 0, novo_dia_abate: str = "") -> bool:
 
         novos_dados = {
             'valor_parcela': novo_valor,
             'total_parcelas': novo_total_parcelas,
             'dia_abate': novo_dia_abate,
-            'descricao': nova_descricao,
+            'id_direcionamento': novo_id_direcionamento,
             'id_banco': novo_id_banco,
-            'id_direcionamento': novo_id_direcionamento
+            'controle_parcelas': novo_controle_parcelas,
+            'descricao': nova_descricao,
         }
 
         edit_command = ""
@@ -123,6 +137,20 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
                 edit_command += f"{key} = {value}, "
 
         edit_command = edit_command[:-2]
+
+        if novo_id_banco or novo_id_direcionamento:
+            request(
+                "PUT",
+                f"http://localhost:8000/gastos_gerais/{id_gasto}", 
+                json={
+                    key: value 
+                    for key, value in novos_dados.items()
+                    if key != 'valor_parcela' or key != 'total_parcelas' or key != 'dia_abate' or key != 'controle_parcelas'}, 
+            )
+
+            edit_command = edit_command.replace(f"id_banco = {novo_id_banco}, ", "").replace(f"id_direcionamento = {novo_id_direcionamento}, ", "")
+
+        self.edit_data("Gastos_gerais", f"valor = {novo_valor}", f"id = {id_gasto}")
 
         return self.edit_data("Gastos_periodizados", edit_command, f"id_gasto = {id_gasto}")
             

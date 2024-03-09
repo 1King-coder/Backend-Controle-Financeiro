@@ -12,7 +12,7 @@ class Migration (SQLite_DB_CRUD):
         nomes_models = [
             model[:-3]
             for model in os.listdir("modules/models")
-            if model != "__pycache__"
+            if model != "__pycache__" and model != "__init__.py"
         ]
 
         models_list = [
@@ -23,6 +23,7 @@ class Migration (SQLite_DB_CRUD):
         return models_list
 
     def migrate (self) -> bool:
+        self.cursor = self.connection.cursor()
 
         for model in self.get_models:
             model_structure = model.structure()

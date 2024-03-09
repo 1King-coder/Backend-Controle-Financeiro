@@ -127,9 +127,7 @@ class Banco_controller (SQLite_DB_CRUD):
             historico_banco_controller.adiciona_historico_banco(id_banco)
             
             saldo_novo = self._calcula_saldo(id_banco)
-            return self.edita_saldo(id_banco, saldo_novo)
-        
-        
+            return self.edita_saldo(id_banco, saldo_novo)      
         
         return False
 
@@ -152,6 +150,7 @@ class Banco_controller (SQLite_DB_CRUD):
     def verifica_saldo_precisa_att (self, id_banco: int) -> bool:
         
         saldo_atual = self.get_saldo(id_banco)
+
         saldo_calculado = self._calcula_saldo(id_banco)
 
         return saldo_atual != saldo_calculado

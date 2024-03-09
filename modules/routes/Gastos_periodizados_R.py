@@ -62,26 +62,31 @@ def init_routes(app, db_name):
 
         if not dados_gasto_periodizado:
             raise HTTPException(status_code=404, detail="Gasto periodizado não encontrado")
+        
         editou = Gasto_periodizado_C.editar(id_gasto_periodizado, **req)
         
         if not editou:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar o gasto periodizado")
 
-        if editou == 2:
-            return Response(content=json.dumps({"message": "Todas as Parcelas deste gasto já foram pagas"}), media_type="application/json")
+        dados_gasto_geral = request(
+            "GET",
+            f"http://localhost:8000/gastos_gerais/{id_gasto_periodizado}",
+        ).json()
 
+        id_banco, id_direcionamento = dados_gasto_geral['id_banco'], dados_gasto_geral['id_direcionamento']
 
-
+        
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_gasto_periodizado['id_banco']}",
-            )
+            if dados_gasto_periodizado.get('controle_parcelas'):
+                request(
+                    "PATCH",
+                    f"http://localhost:8000/bancos/{id_banco}",
+                )
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_gasto_periodizado['id_direcionamento']}",
-            )
+                request(
+                    "PATCH",
+                    f"http://localhost:8000/direcionamentos/{id_direcionamento}",
+                )
 
             if req.get('novo_id_banco'):
                 request(
@@ -132,3 +137,42 @@ def init_routes(app, db_name):
             content=json.dumps({"message": "Gasto periodizado excluído com sucesso"}),
             media_type="application/json"
         )
+
+
+
+    @app.patch("/gastos_periodizados")
+    def atualiza_controle_parcelas():
+        todos_id_gastos_periodizados = [
+            gasto_periodizado['id_gasto'] for gasto_periodizado in Gasto_periodizado_C.mostrar()
+        ]
+
+        try:
+            
+            for id_gasto in todos_id_gastos_periodizados:
+                atualizou = Gasto_periodizado_C.atualiza_controle_parcelas(id_gasto, 30)
+                
+                if atualizou and atualizou != 2:
+                    dados_gasto = request(
+                        "GET",
+                        f"http://localhost:8000/gastos_gerais/{id_gasto}",
+                    ).json()
+
+                    request(
+                        "PATCH",
+                        f"http://localhost:8000/bancos/{dados_gasto['id_banco']}",
+                    )
+
+                    request(
+                        "PATCH",
+                        f"http://localhost:8000/direcionamentos/{dados_gasto['id_direcionamento']}",
+                    )
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o controle de parcelas: {e}")
+
+        return Response(
+            content=json.dumps({"message": "Controle parcelas atualizado com sucesso"}),
+            media_type="application/json"
+        )
+
+
