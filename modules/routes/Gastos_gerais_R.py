@@ -28,12 +28,14 @@ def init_routes (app: FastAPI, db_name: str) -> None:
 
     @app.post("/gastos_gerais")
     def criar_gasto_geral(req: dict):
-        adicionou = Gasto_geral_C.adicionar(
-            **req
-        )
-
-        if not adicionou:
-            raise HTTPException(status_code=400, detail="Ocorreu um erro ao criar o gasto geral/ imediato")
+    
+        for gasto in req[0]:
+            adicionou = Gasto_geral_C.adicionar(**gasto)
+            if not adicionou:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ocorreu um erro ao criar o gasto geral/ imediato"
+                )
 
         try:
 
