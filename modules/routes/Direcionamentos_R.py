@@ -25,6 +25,18 @@ def init_routes(app, db_name: str):
             content=json.dumps(dados),
             media_type="application/json"
         )
+    
+    @app.get("/direcionamentos/{nome_direcionamento}")
+    def id_direcionamento_por_nome(nome_direcionamento: str):
+        id_direcionamento = Direcionamento_C.get_id_direcionamento(nome_direcionamento)
+
+        if not id_direcionamento:
+            raise HTTPException(status_code=404, detail="Direcionamento não encontrado")
+        
+        return Response(
+            content=json.dumps({"id_direcionamento": id_direcionamento}),
+            media_type="application/json"
+        )
 
     @app.post("/direcionamentos")
     def criar_direcionamento(req: dict):
