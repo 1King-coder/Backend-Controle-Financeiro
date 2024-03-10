@@ -27,7 +27,7 @@ def init_routes(app: FastAPI, db_name: str) -> None:
                 )
             
         ids = [
-            [deposito['id_direcionamento'], deposito['id_banco']] for deposito in req['depositos']
+            (deposito['id_banco'], deposito['id_direcionamento']) for deposito in req['depositos']
         ]
             
         try:
