@@ -17,13 +17,14 @@ def init_routes(app: FastAPI, db_name: str) -> None:
 
     @app.post("/depositos")
     def criar_deposito(req: dict):
-        adicionou = Deposito_C.adicionar(
-            **req
-        )
-
-        if not adicionou:
-            raise HTTPException(status_code=400, detail="Depósito já existe")
-
+        
+        for deposito in req[0]:
+            adicionou = Deposito_C.adicionar(**deposito)
+            if not adicionou:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ocorreu um erro ao criar o deposito"
+                )
         try:
 
             request(
