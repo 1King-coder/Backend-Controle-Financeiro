@@ -20,11 +20,7 @@ class Deposito_controller (SQLite_DB_CRUD):
                               id_banco: int, id_direcionamento: int,
                               valor: float, descricao: str="Deposito") -> bool:
 
-        """
-        Sempre que um gasto for inserido, ele automaticamente irá inserir um
-        gasto na tabela de gastos imediatos ou periodizados, de acordo com seu
-        tipo de gasto.
-        """
+        
 
         descricao += f" {self.mostrar()[-1]['id']}"
 

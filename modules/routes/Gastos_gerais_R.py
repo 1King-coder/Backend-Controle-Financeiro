@@ -36,18 +36,23 @@ def init_routes (app: FastAPI, db_name: str) -> None:
                     status_code=400,
                     detail="Ocorreu um erro ao criar o gasto geral/ imediato"
                 )
+            
+        ids = [
+            [gasto['id_direcionamento'], gasto['id_banco']] for gasto in req['gastos']
+        ]
 
         try:
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{req['id_banco']}",
-            )
+            for id_banco, id_direcionamento in ids:
+                request(
+                    "PATCH",
+                    f"http://localhost:8000/bancos/{id_banco}",
+                )
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{req['id_direcionamento']}",
-            )
+                request(
+                    "PATCH",
+                    f"http://localhost:8000/direcionamentos/{id_direcionamento}",
+                )
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
