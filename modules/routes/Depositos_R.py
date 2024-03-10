@@ -18,7 +18,7 @@ def init_routes(app: FastAPI, db_name: str) -> None:
     @app.post("/depositos")
     def criar_deposito(req: dict):
         
-        for deposito in req[0]:
+        for deposito in req['depositos']:
             adicionou = Deposito_C.adicionar(**deposito)
             if not adicionou:
                 raise HTTPException(

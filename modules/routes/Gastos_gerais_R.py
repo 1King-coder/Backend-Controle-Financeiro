@@ -29,7 +29,7 @@ def init_routes (app: FastAPI, db_name: str) -> None:
     @app.post("/gastos_gerais")
     def criar_gasto_geral(req: dict):
     
-        for gasto in req[0]:
+        for gasto in req['gastos']:
             adicionou = Gasto_geral_C.adicionar(**gasto)
             if not adicionou:
                 raise HTTPException(
