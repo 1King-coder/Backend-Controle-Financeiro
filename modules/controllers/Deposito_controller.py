@@ -80,7 +80,7 @@ class Deposito_controller (SQLite_DB_CRUD):
         for key, value in novos_dados.items():
             if value:
                 if key == "descricao":
-                    edit_command += f"{key} = {value} {self.cursor.lastrowid}, "
+                    edit_command += f"{key} = '{value}',"
                     continue
 
                 edit_command += f"{key} = {value}, "
