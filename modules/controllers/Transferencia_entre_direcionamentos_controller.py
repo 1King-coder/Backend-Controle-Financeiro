@@ -57,8 +57,8 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
             'valor': novo_valor,
             'descricao': nova_descricao,
             'id_banco': novo_id_banco,
-            'id_banco_destino': novo_id_direcionamento_destino,
-            'id_banco_origem': novo_id_direcionamento_origem
+            'id_direcionamento_destino': novo_id_direcionamento_destino,
+            'id_direcionamento_origem': novo_id_direcionamento_origem
         }
 
         edit_command = ""
