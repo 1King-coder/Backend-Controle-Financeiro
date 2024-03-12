@@ -57,7 +57,7 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
         novos_dados = {
             'valor': novo_valor,
             'descricao': nova_descricao,
-            'id_direcionamento': id_direcionamento,
+            'id_direcionamento': novo_id_direcionamento,
             'id_banco_destino': novo_id_banco_destino,
             'id_banco_origem': novo_id_banco_origem
         }
