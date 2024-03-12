@@ -52,7 +52,7 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
 
     def editar (self, id_transf: int, novo_id_banco_origem: int = 0,
                 novo_id_banco_destino: int = 0, novo_valor: float = 0,
-                id_direcionamento: int = 0, nova_descricao: str = "") -> bool:     
+                novo_id_direcionamento: int = 0, nova_descricao: str = "") -> bool:     
         
         novos_dados = {
             'valor': novo_valor,
