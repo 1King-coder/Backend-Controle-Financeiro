@@ -50,6 +50,9 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         if controle_parcelas < 0:
             return False
         
+        if not descricao:
+            descricao = f"Gasto periodizado {self.cursor.lastrowid}"
+        
         banco_saldo = self.banco_c.get_saldo(id_banco)
         direc_saldo = self.direc_C.get_saldo(id_direcionamento)
 
@@ -60,7 +63,6 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
             return False
         
 
-        descricao += f" {self.cursor.lastrowid}"
 
         gasto_geral_model = Gasto_geral_model(
             id_banco, id_direcionamento, "periodizado",

@@ -44,7 +44,8 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
         if saldo_direc < valor:
             return False
 
-        descricao += f" {self.cursor.lastrowid}"
+        if not descricao:
+            descricao = f"Gasto {self.cursor.lastrowid}"
         
 
         gasto_geral = Gasto_geral_model(
