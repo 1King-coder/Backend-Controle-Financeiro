@@ -37,6 +37,9 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
     def adicionar (self, id_banco_origem: int, id_banco_destino: int,
                    id_direcionamento: int, valor: float, descricao: str = "") -> bool:
 
+        if valor < 0:
+            return False
+
         if not descricao:
             descricao = f"Transferência {self.cursor.lastrowid}"
 
@@ -61,6 +64,9 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
             'id_banco_destino': novo_id_banco_destino,
             'id_banco_origem': novo_id_banco_origem
         }
+
+        if novo_valor < 0:
+            return False
 
         edit_command = ""
 

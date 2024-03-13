@@ -24,6 +24,9 @@ class Deposito_controller (SQLite_DB_CRUD):
 
         descricao += f" {self.mostrar()[-1]['id']}"
 
+        if valor < 0:
+            return False
+
         deposito = Deposito_model(
             id_banco, id_direcionamento,
             valor, descricao
@@ -74,6 +77,9 @@ class Deposito_controller (SQLite_DB_CRUD):
             'id_banco': novo_id_banco,
             'id_direcionamento': novo_id_direcionamento
         }
+
+        if novo_valor < 0:
+            return False
 
         edit_command = ""
 

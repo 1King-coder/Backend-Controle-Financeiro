@@ -34,6 +34,15 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
                                     total_parcelas: int, controle_parcelas: int = 0,
                                     descricao: str = "Gasto periodizado", dia_abate: str = "") -> bool:
 
+        if valor_parcela < 0:
+            return False
+        
+        if total_parcelas < 0:
+            return False
+        
+        if controle_parcelas < 0:
+            return False
+
         descricao += f" {self.cursor.lastrowid}"
 
         gasto_geral_model = Gasto_geral_model(
@@ -115,6 +124,15 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
                            nova_descricao: str = "", novo_id_banco: int = 0,
                            novo_id_direcionamento: int = 0, novo_total_parcelas: int = 0,
                            novo_controle_parcelas: int = 0, novo_dia_abate: str = "") -> bool:
+
+        if novo_valor < 0:
+            return False
+        
+        if novo_total_parcelas < 0:
+            return False
+        
+        if novo_controle_parcelas < 0:
+            return False
 
         novos_dados = {
             'valor_parcela': novo_valor,

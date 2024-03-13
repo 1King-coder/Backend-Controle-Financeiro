@@ -27,6 +27,9 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
         tipo de gasto.
         """
 
+        if valor < 0:
+            return False
+
         descricao += f" {self.cursor.lastrowid}"
         
 
@@ -91,7 +94,8 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
                            novo_id_direcionamento: int = 0) -> bool:
         
         
-
+        if novo_valor < 0:
+            return False
 
         novos_dados = {
             'valor': novo_valor,

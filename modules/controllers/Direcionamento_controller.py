@@ -91,6 +91,8 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         return saldo[0]['saldo']
 
     def editar (self, id_direcionamento: int, novo_saldo: float) -> bool:
+        if novo_saldo < 0:
+            return False
 
         return self.edit_data("Direcionamentos", f"saldo = {novo_saldo}", f"id = {id_direcionamento}")
 
@@ -156,6 +158,9 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         
         saldo_atual = self.get_saldo(id_direcionamento)
         saldo_calculado = self._calcula_saldo(id_direcionamento)
+
+        if saldo_calculado < 0:
+            return False
 
         return saldo_atual != saldo_calculado
 

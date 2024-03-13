@@ -119,6 +119,9 @@ class Banco_controller (SQLite_DB_CRUD):
 
     def edita_saldo (self, id_banco: int, novo_saldo: float) -> bool:
 
+        if novo_saldo < 0:
+            return False
+
         return self.edit_data("Bancos", f"saldo = {novo_saldo}", f"id = {id_banco}")
 
     def atualiza_saldo (self, id_banco: int) -> bool:
@@ -152,6 +155,9 @@ class Banco_controller (SQLite_DB_CRUD):
         saldo_atual = self.get_saldo(id_banco)
 
         saldo_calculado = self._calcula_saldo(id_banco)
+
+        if saldo_calculado < 0:
+            return False
 
         return saldo_atual != saldo_calculado
 
