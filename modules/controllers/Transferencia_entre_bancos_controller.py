@@ -78,6 +78,12 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
             'id_banco_origem': novo_id_banco_origem
         }
 
+        try:
+            float(nova_descricao)
+            return False
+        except Exception:
+            pass
+
         if novo_valor < 0:
             return False
 

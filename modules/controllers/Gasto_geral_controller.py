@@ -111,6 +111,12 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
         if novo_valor < 0:
             return False
         
+        try:
+            float(nova_descricao)
+            return False
+        except Exception:
+            pass
+        
         saldo_banco = self.banco_c.get_saldo(novo_id_banco)
         saldo_direc = self.direc_C.get_saldo(novo_id_direcionamento)
 

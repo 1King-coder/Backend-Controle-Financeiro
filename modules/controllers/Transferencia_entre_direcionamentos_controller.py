@@ -83,6 +83,12 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
             'id_direcionamento_origem': novo_id_direcionamento_origem
         }
 
+        try:
+            float(nova_descricao)
+            return False
+        except Exception:
+            pass
+
         edit_command = ""
 
         for key, value in novos_dados.items():

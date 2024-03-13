@@ -151,6 +151,13 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         if novo_controle_parcelas < 0:
             return False
         
+        try:
+            float(nova_descricao)
+            return False
+
+        except Exception:
+            pass
+
         saldo_banco = self.banco_c.get_saldo(novo_id_banco)
         saldo_direc = self.direc_C.get_saldo(novo_id_direcionamento)
 
