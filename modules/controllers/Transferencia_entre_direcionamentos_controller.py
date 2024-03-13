@@ -1,11 +1,15 @@
 from .DB_base_class import SQLite_DB_CRUD
 from ..models.Transferencia_entre_direcionamentos_model import Transferencia_entre_direcionamentos_model
+from .Banco_controller import Banco_controller
+from .Direcionamento_controller import Direcionamento_controller
 from pandas import DataFrame
 
 class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
 
     def __init__ (self, db_name: str) -> None:
         super().__init__(db_name)
+
+        self.direc_C = Direcionamento_controller(self.db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -38,6 +42,13 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
 
         if valor < 0:
             return False
+        
+        saldo_origem = self.direc_C.get_saldo(id_direcionamento_origem)
+
+        if saldo_origem < valor:
+            return False
+        
+
 
         if not descricao:
             descricao = f"Transferência {self.cursor.lastrowid}"
@@ -57,6 +68,11 @@ class Transferencia_entre_direcionamentos_controller (SQLite_DB_CRUD):
                 novo_valor: float = 0, nova_descricao: str = "") -> bool:     
         
         if novo_valor < 0:
+            return False
+        
+        saldo_origem = self.direc_C.get_saldo(novo_id_direcionamento_origem)
+
+        if saldo_origem < novo_valor:
             return False
 
         novos_dados = {

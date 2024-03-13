@@ -1,5 +1,7 @@
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_imediato_model import Gasto_imediato_model
+from .Banco_controller import Banco_controller
+from .Direcionamento_controller import Direcionamento_controller
 from .DB_base_class import SQLite_DB_CRUD
 from pandas import DataFrame
 
@@ -8,6 +10,9 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
 
     def __init__ (self, db_name: str) -> None:
         super().__init__(db_name)
+
+        self.banco_c = Banco_controller(self.db_name)
+        self.direc_C = Direcionamento_controller(self.db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -28,6 +33,15 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
         """
 
         if valor < 0:
+            return False
+        
+        saldo_banco = self.banco_c.get_saldo(id_banco)
+        saldo_direc = self.direc_C.get_saldo(id_direcionamento)
+
+        if saldo_banco < valor:
+            return False
+        
+        if saldo_direc < valor:
             return False
 
         descricao += f" {self.cursor.lastrowid}"
@@ -95,6 +109,15 @@ class Gasto_geral_controller (SQLite_DB_CRUD):
         
         
         if novo_valor < 0:
+            return False
+        
+        saldo_banco = self.banco_c.get_saldo(novo_id_banco)
+        saldo_direc = self.direc_C.get_saldo(novo_id_direcionamento)
+
+        if saldo_banco < novo_valor:
+            return False
+        
+        if saldo_direc < novo_valor:
             return False
 
         novos_dados = {

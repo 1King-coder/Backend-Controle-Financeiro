@@ -1,6 +1,8 @@
 
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_periodizado_model import Gasto_periodizado_model
+from .Banco_controller import Banco_controller
+from .Direcionamento_controller import Direcionamento_controller
 from requests import request
 from .DB_base_class import SQLite_DB_CRUD
 from pandas import DataFrame
@@ -11,6 +13,11 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
 
     def __init__ (self, db_name: str) -> None:
         super().__init__(db_name)
+
+        self.banco_c = Banco_controller(self.db_name)
+        self.direc_C = Direcionamento_controller(self.db_name)
+
+
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -42,6 +49,16 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         
         if controle_parcelas < 0:
             return False
+        
+        banco_saldo = self.banco_c.get_saldo(id_banco)
+        direc_saldo = self.direc_C.get_saldo(id_direcionamento)
+
+        if banco_saldo < valor_parcela * controle_parcelas:
+            return False
+        
+        if direc_saldo < valor_parcela * controle_parcelas:
+            return False
+        
 
         descricao += f" {self.cursor.lastrowid}"
 
@@ -132,6 +149,15 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
             return False
         
         if novo_controle_parcelas < 0:
+            return False
+        
+        saldo_banco = self.banco_c.get_saldo(novo_id_banco)
+        saldo_direc = self.direc_C.get_saldo(novo_id_direcionamento)
+
+        if saldo_banco < novo_valor * novo_controle_parcelas:
+            return False
+        
+        if saldo_direc < novo_valor * novo_controle_parcelas:
             return False
 
         novos_dados = {

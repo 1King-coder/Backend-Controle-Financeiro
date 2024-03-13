@@ -1,11 +1,14 @@
 from .DB_base_class import SQLite_DB_CRUD
 from ..models.Transferencia_entre_bancos_model import Transferencia_entre_bancos_model
+from .Banco_controller import Banco_controller
 from pandas import DataFrame
 
 class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
 
     def __init__ (self, db_name: str) -> None:
         super().__init__(db_name)
+
+        self.banco_c = Banco_controller(self.db_name)
 
     def mostrar (self) -> list:
         return self.get_data(
@@ -39,6 +42,11 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
 
         if valor < 0:
             return False
+        
+        saldo_origem = self.banco_c.get_saldo(id_banco_origem)
+        
+        if saldo_origem < valor:
+            return False
 
         if not descricao:
             descricao = f"Transferência {self.cursor.lastrowid}"
@@ -57,6 +65,11 @@ class Transferencia_entre_bancos_controller (SQLite_DB_CRUD):
                 novo_id_banco_destino: int = 0, novo_valor: float = 0,
                 novo_id_direcionamento: int = 0, nova_descricao: str = "") -> bool:     
         
+        saldo_origem = self.banco_c.get_saldo(novo_id_banco_origem)
+
+        if saldo_origem < novo_valor:
+            return False
+
         novos_dados = {
             'valor': novo_valor,
             'descricao': nova_descricao,
