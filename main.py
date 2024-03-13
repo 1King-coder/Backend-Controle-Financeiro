@@ -11,7 +11,6 @@ from modules.routes.Gastos_periodizados_R import init_routes as init_routes_gast
 from modules.routes.Transferencia_bancos_R import init_routes as init_routes_transferencias_bancos
 from modules.routes.Transferencia_direcionamentos_R import init_routes as init_routes_transferencias_direcionamentos
 
-import pandas as pd
 
 TEST_DB_NAME = "DB_teste"
 
