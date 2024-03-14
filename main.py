@@ -12,7 +12,7 @@ from modules.routes.Transferencia_bancos_R import init_routes as init_routes_tra
 from modules.routes.Transferencia_direcionamentos_R import init_routes as init_routes_transferencias_direcionamentos
 
 
-TEST_DB_NAME = "DB_teste"
+TEST_DB_NAME = "Controle_Financeiro_DB_fase_testes"
 
 app = FastAPI(
     title="API Controle Financeiro",

@@ -49,7 +49,9 @@ class Migration (SQLite_DB_CRUD):
         return True
 
 def main():
-    with Migration("DB_teste") as migration:
+    DB_NAME = "Controle_Financeiro_DB_fase_testes"
+
+    with Migration(DB_NAME) as migration:
 
         try:
             if not migration.migrate():
