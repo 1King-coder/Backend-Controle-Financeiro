@@ -1,6 +1,7 @@
 
 from ..models.Gasto_geral_model import Gasto_geral_model
 from ..models.Gasto_periodizado_model import Gasto_periodizado_model
+from .Gasto_geral_controller import Gasto_geral_controller
 from .Banco_controller import Banco_controller
 from .Direcionamento_controller import Direcionamento_controller
 from requests import request
@@ -192,14 +193,11 @@ class Gasto_periodizado_controller (SQLite_DB_CRUD):
         edit_command = edit_command[:-2]
 
         if novo_id_banco or novo_id_direcionamento:
-            request(
-                "PUT",
-                f"http://localhost:8000/gastos_gerais/{id_gasto}", 
-                json={
-                    key: value 
+            
+            Gasto_geral_controller(self.db_name).editar(id_gasto, **{
+                    'novo_' if key != 'descricao' else'nova_' + key: value 
                     for key, value in novos_dados.items()
-                    if key != 'valor_parcela' or key != 'total_parcelas' or key != 'dia_abate' or key != 'controle_parcelas'}, 
-            )
+                    if key != 'valor_parcela' or key != 'total_parcelas' or key != 'dia_abate' or key != 'controle_parcelas'})
 
             edit_command = edit_command.replace(f"id_banco = {novo_id_banco}, ", "").replace(f"id_direcionamento = {novo_id_direcionamento}, ", "")
 

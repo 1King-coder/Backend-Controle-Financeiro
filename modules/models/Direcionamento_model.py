@@ -45,7 +45,7 @@ class Direcionamento_model:
                 "id INTEGER Primary key autoincrement, " +
                 "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL)"
+                "updated_at TEXT DEFAULT (strftime('%d/%m/%Y %H:%M:%S', 'now')) NOT NULL)"
             )
         }
     
@@ -57,7 +57,7 @@ class Direcionamento_model:
             FOR EACH ROW
             BEGIN
                 UPDATE Direcionamentos
-                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                SET updated_at = (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime'))
                 WHERE id = OLD.id;
             END;
         """

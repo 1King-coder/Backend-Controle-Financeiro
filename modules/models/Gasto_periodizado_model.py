@@ -149,7 +149,7 @@ class Gasto_periodizado_model:
             FOR EACH ROW
             BEGIN
                 UPDATE Gastos_periodizados
-                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                SET updated_at = (strftime('%d/%m/%Y', 'now', 'localtime'))
                 WHERE id_gasto = OLD.id_gasto;
             END;
         """

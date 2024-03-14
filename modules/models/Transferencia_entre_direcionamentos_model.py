@@ -96,7 +96,7 @@ class Transferencia_entre_direcionamentos_model:
                 "id_banco INTEGER, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "created_at TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " + 
                 "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_direcionamento_origem) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +

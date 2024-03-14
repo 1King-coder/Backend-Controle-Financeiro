@@ -62,7 +62,7 @@ class Historico_bancos_model:
                 "id_banco INTEGER, " +
                 "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " +
+                "created_at TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " +
                 "FOREIGN KEY (id_banco) REFERENCES Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             )

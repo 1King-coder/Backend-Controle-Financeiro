@@ -92,7 +92,7 @@ class Gasto_geral_model:
                 "tipo_gasto TEXT NOT NULL DEFAULT 'imediato', " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "created_at TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " + 
                 "Foreign key (id_banco) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"

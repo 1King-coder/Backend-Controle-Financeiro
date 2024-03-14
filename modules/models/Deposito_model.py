@@ -81,7 +81,7 @@ class Deposito_model:
                 "id_direcionamento INTEGER, " +
                 "descricao TEXT, " +
                 "valor REAL NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "created_at TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " + 
                 "Foreign key (id_banco) references Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "Foreign key (id_direcionamento) references Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
