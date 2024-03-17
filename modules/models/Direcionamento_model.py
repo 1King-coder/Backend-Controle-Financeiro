@@ -44,7 +44,7 @@ class Direcionamento_model:
             'columns': ( "(" +
                 "id INTEGER Primary key autoincrement, " +
                 "nome TEXT NOT NULL, " +
-                "saldo REAL NOT NULL, " +
+                "saldo REAL NOT NULL DEFAULT 0, " +
                 "updated_at TEXT DEFAULT (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime')) NOT NULL)"
             )
         }

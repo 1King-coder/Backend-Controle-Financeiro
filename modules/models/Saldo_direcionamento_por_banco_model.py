@@ -83,7 +83,7 @@ class Saldo_direcionamento_por_banco_model:
                 "id_direcionamento INTEGER NOT NULL, " +
                 "nome_banco TEXT NOT NULL, " +
                 "nome_direcionamento TEXT NOT NULL, " +
-                "saldo REAL NOT NULL, " +
+                "saldo REAL NOT NULL DEFAULT 0, " +
                 "PRIMARY KEY (id_banco, id_direcionamento), " +
                 "FOREIGN KEY (id_banco) REFERENCES Bancos(id) ON DELETE CASCADE ON UPDATE CASCADE, " +
                 "FOREIGN KEY (id_direcionamento) REFERENCES Direcionamentos(id) ON DELETE CASCADE ON UPDATE CASCADE" +
