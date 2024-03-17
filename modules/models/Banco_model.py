@@ -58,7 +58,7 @@ class Banco_model:
             FOR EACH ROW
             BEGIN
                 UPDATE Bancos
-                SET updated_at = (strftime('%d-%m-%Y %H:%M:%S', 'now'))
+                SET updated_at = (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime'))
                 WHERE id = OLD.id;
             END;
         """

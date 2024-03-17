@@ -45,7 +45,7 @@ class Direcionamento_model:
                 "id INTEGER Primary key autoincrement, " +
                 "nome TEXT NOT NULL, " +
                 "saldo REAL NOT NULL, " +
-                "updated_at TEXT DEFAULT (strftime('%d/%m/%Y %H:%M:%S', 'now')) NOT NULL)"
+                "updated_at TEXT DEFAULT (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime')) NOT NULL)"
             )
         }
     

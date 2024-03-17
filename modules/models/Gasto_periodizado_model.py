@@ -131,11 +131,11 @@ class Gasto_periodizado_model:
                 "id_gasto INTEGER Primary key, " +
                 "descricao TEXT, " +
                 "valor_parcela REAL NOT NULL, " +
-                "dia_abate TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " +
+                "dia_abate TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " +
                 "total_parcelas INTEGER NOT NULL, " +
                 "controle_parcelas INTEGER DEFAULT 0 NOT NULL, " +
-                "created_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
-                "updated_at TEXT DEFAULT (strftime('%d-%m-%Y %H:%M:%S', 'now')) NOT NULL, " + 
+                "created_at TEXT DEFAULT (strftime('%d/%m/%Y', 'now', 'localtime')) NOT NULL, " + 
+                "updated_at TEXT DEFAULT (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime')) NOT NULL, " + 
                 "Foreign key (id_gasto) references Gastos_gerais(id) ON DELETE CASCADE ON UPDATE CASCADE" +
                 ")"
             ) 
@@ -149,7 +149,7 @@ class Gasto_periodizado_model:
             FOR EACH ROW
             BEGIN
                 UPDATE Gastos_periodizados
-                SET updated_at = (strftime('%d/%m/%Y', 'now', 'localtime'))
+                SET updated_at = (strftime('%d/%m/%Y %H:%M:%S', 'now', 'localtime'))
                 WHERE id_gasto = OLD.id_gasto;
             END;
         """

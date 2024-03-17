@@ -24,6 +24,7 @@ class Migration (SQLite_DB_CRUD):
 
     def migrate (self) -> bool:
         self.cursor = self.connection.cursor()
+        triggers = []
 
         for model in self.get_models:
             model_structure = model.structure()
@@ -37,11 +38,20 @@ class Migration (SQLite_DB_CRUD):
                 
                 if "trigger_script" in dir(model):
                     trigger_script = model.trigger_script()
-                    self.cursor.execute(trigger_script)
-                    self.connection.commit()
+                    triggers.append(trigger_script)
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to create the table {model_structure['name']}."
+                print(err_msg)
+                log(f"{err_msg}: {e}")
+                return False
+
+        for trigger in triggers:
+            try:
+                self.cursor.execute(trigger)
+                self.connection.commit()
+            except Exception as e:
+                err_msg = f"Error occurred when trying to create the trigger {trigger}."
                 print(err_msg)
                 log(f"{err_msg}: {e}")
                 return False
@@ -49,7 +59,7 @@ class Migration (SQLite_DB_CRUD):
         return True
 
 def main():
-    DB_NAME = "Controle_Financeiro_DB_fase_testes"
+    DB_NAME = "Controle_Financeiro_DB"
 
     with Migration(DB_NAME) as migration:
 
