@@ -38,7 +38,11 @@ class Migration (SQLite_DB_CRUD):
                 
                 if "trigger_script" in dir(model):
                     trigger_script = model.trigger_script()
-                    triggers.append(trigger_script)
+                    if isinstance(trigger_script, str):
+                        triggers.append(trigger_script)
+                        continue
+                    
+                    triggers.extend(trigger_script)
             
             except Exception as e:
                 err_msg = f"Error occurred when trying to create the table {model_structure['name']}."
@@ -48,10 +52,10 @@ class Migration (SQLite_DB_CRUD):
 
         for trigger in triggers:
             try:
-                self.cursor.execute(trigger)
+                self.cursor.executescript(trigger)
                 self.connection.commit()
             except Exception as e:
-                err_msg = f"Error occurred when trying to create the trigger {trigger}."
+                err_msg = f"Error occurred when trying to create the trigger."
                 print(err_msg)
                 log(f"{err_msg}: {e}")
                 return False
