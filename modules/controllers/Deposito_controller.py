@@ -21,8 +21,10 @@ class Deposito_controller (SQLite_DB_CRUD):
                               valor: float, descricao: str="Deposito") -> bool:
 
         
-
-        descricao += f" {self.mostrar()[-1]['id']}"
+        if not self.mostrar():
+            descricao = "Deposito 1"
+        else:
+            descricao += f" {self.mostrar()[-1]['id']}"
 
         if valor < 0:
             return False
