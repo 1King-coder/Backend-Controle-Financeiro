@@ -207,7 +207,105 @@ class Banco_controller (SQLite_DB_CRUD):
             AND total_tdenv.id_d = s.id_direcionamento
         WHERE s.id_banco = sbpd.id_banco
         AND s.id_direcionamento = sbpd.id_direcionamento);
-""")
+"""
+        )
+        self.connection.commit()
+        cursor.executescript(
+                """
+    WITH total_dep AS (
+    SELECT 
+    s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(dep.valor, 0)) AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Depositos dep
+        ON s.id_banco = dep.id_banco 
+        AND s.id_direcionamento  = dep.id_direcionamento
+    GROUP BY s.id_banco , s.id_direcionamento
+    ),
+    total_tbrec AS (
+    SELECT 
+    s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(t.valor, 0)) AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Transferencias_entre_bancos t
+        ON t.id_banco_destino = s.id_banco 
+        AND t.id_direcionamento = s.id_direcionamento
+    GROUP BY s.id_banco , s.id_direcionamento
+    ),
+    total_tdrec AS (
+    SELECT 
+    s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(t.valor, 0)) AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Transferencias_entre_direcionamentos t
+        ON t.id_direcionamento_destino = s.id_direcionamento 
+        AND t.id_banco = s.id_banco
+    GROUP BY s.id_banco , s.id_direcionamento
+    ),
+    total_gastos AS (
+    SELECT s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(gi.valor, 0) + 
+        IFNULL(gp.valor_parcela * gp.controle_parcelas, 0))
+        as total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Gastos_gerais gg
+        ON gg.id_banco = s.id_banco 
+        AND gg.id_direcionamento = s.id_direcionamento
+    LEFT JOIN Gastos_imediatos gi
+        ON gi.id_gasto = gg.id
+    LEFT JOIN Gastos_periodizados gp
+        ON gp.id_gasto = gg.id
+    GROUP BY s.id_banco ,s.id_direcionamento
+    ),
+    total_tbenv AS (
+    SELECT 
+    s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(t.valor, 0)) AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Transferencias_entre_bancos t
+        ON t.id_banco_origem = s.id_banco 
+        AND t.id_direcionamento = s.id_direcionamento
+    GROUP BY s.id_banco , s.id_direcionamento
+    ),
+    total_tdenv AS (
+    SELECT 
+    s.id_banco as id_b, s.id_direcionamento as id_d,
+    SUM(IFNULL(t.valor, 0)) AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN Transferencias_entre_direcionamentos t
+        ON t.id_direcionamento_origem = s.id_direcionamento 
+        AND t.id_banco = s.id_banco
+    GROUP BY s.id_banco , s.id_direcionamento
+    )
+    UPDATE Saldo_direcionamento_por_banco AS sdpb
+    SET saldo = (
+    SELECT
+    (total_dep.total + total_tbrec.total + total_tdrec.total)
+    - (total_gastos.total + total_tbenv.total + total_tdenv.total)
+    AS total
+    FROM Saldo_direcionamento_por_banco s
+    LEFT JOIN total_dep
+        ON total_dep.id_b = s.id_banco 
+        AND total_dep.id_d = s.id_direcionamento 
+    LEFT JOIN total_tbrec
+        ON total_tbrec.id_b = s.id_banco
+        AND total_tbrec.id_d = s.id_direcionamento 
+    LEFT JOIN total_tdrec
+        ON total_tdrec.id_b = s.id_banco 
+        AND total_tdrec.id_d = s.id_direcionamento
+    LEFT JOIN total_gastos
+        ON total_gastos.id_b = s.id_banco
+        AND total_gastos.id_d = s.id_direcionamento
+    LEFT JOIN total_tbenv
+        ON total_tbenv.id_b = s.id_banco
+        AND total_tbenv.id_d = s.id_direcionamento 
+    LEFT JOIN total_tdenv
+        ON total_tdenv.id_b = s.id_banco 
+        AND total_tdenv.id_d = s.id_direcionamento
+    WHERE 
+    s.id_banco = sdpb.id_banco
+    AND s.id_direcionamento = sdpb.id_direcionamento);"""
+        )
         self.connection.commit()
         cursor.close()
         return historico_was_edited        
