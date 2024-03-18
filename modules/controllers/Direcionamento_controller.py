@@ -170,7 +170,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         AND t.id_banco = s.id_banco
     GROUP BY s.id_banco , s.id_direcionamento
     )
-    UPDATE Saldo_direcionamento_por_banco sdpb
+    UPDATE Saldo_direcionamento_por_banco AS sdpb
     SET saldo = (
     SELECT
     (total_dep.total + total_tbrec.total + total_tdrec.total)
