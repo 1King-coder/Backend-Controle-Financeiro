@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  sqlitedb:
+    image: alpine:latest
+    volumes:
+      - sqlite_data:/DB/Controle_Financeiro_DB.sqlite3
+    command: sh -c "apk --no-cache add sqlite && cp /DB/Controle_Financeiro_DB.sqlite3 /DB/Controle_Financeiro_DB.sqlite3 && sqlite3 /DB/Controle_Financeiro_DB.sqlite3 < ./DB/Controle_Financeiro_DB.sqlite3 && tail -f /dev/null"
+    container_name: sqlitedb
+
+  sqlitebrowser:
+    image: linuxserver/sqlitebrowser
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlitedb
+    environment:
+      - PGUID=1000
+      - TZ=America/Sao_Paulo
+      - ENABLE_UWSGI=true
+    volumes:
+      - sqlite_data:/DB/Controle_Financeiro_DB.sqlite3
+    container_name: sqlitebrowser
+
+  api:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - sqlite_data:/DB/Controle_Financeiro_DB.sqlite3
+    depends_on:
+      - sqlitedb
+      - sqlitebrowser
+
+    container_name: api
+
+volumes:
+  sqlite_data:

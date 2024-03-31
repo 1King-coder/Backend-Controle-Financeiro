@@ -5,6 +5,8 @@ from copy import deepcopy
 
 from ..Log import log
 
+SQLITE_DOCKER = "sqlite_data:"
+
 
 class SQLite_DB_CRUD:
 
@@ -17,7 +19,7 @@ class SQLite_DB_CRUD:
 
         try:
             db_name = self.db_name + ".sqlite3"
-            db_path = Path(__file__).parent.parent.parent.joinpath("DB") / db_name
+            db_path = SQLITE_DOCKER / Path(__file__).parent.parent.parent.joinpath("DB") / db_name
 
             self.connection = sqlite3.connect(db_path, check_same_thread=False)
             self.connection.row_factory = sqlite3.Row
