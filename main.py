@@ -1,4 +1,7 @@
 from fastapi import FastAPI
+from threading import Thread
+from modules.controllers.Banco_controller import Banco_controller
+from modules.controllers.Direcionamento_controller import Direcionamento_controller
 from modules.routes.Bancos_R import init_routes as init_routes_bancos
 from modules.routes.Direcionamentos_R import init_routes as init_routes_direcionamentos
 from modules.routes.Depositos_R import init_routes as init_routes_depositos
@@ -28,6 +31,13 @@ routes = [
 
 for route in routes:
     route(app, db_name=MAIN_DB_NAME)
+with Banco_controller(MAIN_DB_NAME) as db:
+    ids_bancos = [banco.get("id") for banco in db.mostrar()]
+
+with Direcionamento_controller(MAIN_DB_NAME) as db:
+    ids_direcionamentos = [direcionamento.get("id") for direcionamento in db.mostrar()]
+        
+
 
 def main():
     """

@@ -1,10 +1,14 @@
-from modules.controllers.Gasto_periodizado_controller import Gasto_periodizado_controller
+from ..controllers.Gasto_periodizado_controller import Gasto_periodizado_controller
+from ..controllers.Banco_controller import Banco_controller
+from ..controllers.Direcionamento_controller import Direcionamento_controller
 from fastapi import FastAPI, HTTPException, Response
 from requests import request
 import json
 
 def init_routes(app, db_name):
     Gasto_periodizado_C = Gasto_periodizado_controller(db_name)
+    Banco_C = Banco_controller(db_name)
+    Direcionamento_C = Direcionamento_controller(db_name)
 
     @app.post("/gastos_periodizados")
     def adiciona_gasto_periodizado(req: dict):
@@ -17,15 +21,8 @@ def init_routes(app, db_name):
 
         try:
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{req['id_banco']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{req['id_direcionamento']}",
-            )
+            Banco_C.atualiza_saldo(req['id_banco'])
+            Direcionamento_C.atualizar(req['id_direcionamento'])
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
@@ -78,27 +75,14 @@ def init_routes(app, db_name):
         
         try:
             if dados_gasto_periodizado.get('controle_parcelas'):
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/bancos/{id_banco}",
-                )
-
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/direcionamentos/{id_direcionamento}",
-                )
+                Banco_C.atualiza_saldo(id_banco)
+                Direcionamento_C.atualizar(id_direcionamento)
 
             if req.get('novo_id_banco'):
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/bancos/{req['novo_id_banco']}",
-                )
+                Banco_C.atualiza_saldo(req['novo_id_banco'])
 
             if req.get('novo_id_direcionamento'):
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/direcionamentos/{req['novo_id_direcionamento']}",
-                )
+                Direcionamento_C.atualizar(req['novo_id_direcionamento'])
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
@@ -120,15 +104,8 @@ def init_routes(app, db_name):
 
         try:
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_gasto_periodizado['id_banco']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_gasto_periodizado['id_direcionamento']}",
-            )
+            Banco_C.atualiza_saldo(dados_gasto_periodizado['id_banco'])
+            Direcionamento_C.atualizar(dados_gasto_periodizado['id_direcionamento'])
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
@@ -157,15 +134,8 @@ def init_routes(app, db_name):
                         f"http://localhost:8000/gastos_gerais/{id_gasto}",
                     ).json()
 
-                    request(
-                        "PATCH",
-                        f"http://localhost:8000/bancos/{dados_gasto['id_banco']}",
-                    )
-
-                    request(
-                        "PATCH",
-                        f"http://localhost:8000/direcionamentos/{dados_gasto['id_direcionamento']}",
-                    )
+                    Banco_C.atualiza_saldo(dados_gasto['id_banco'])
+                    Direcionamento_C.atualizar(dados_gasto['id_direcionamento'])
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o controle de parcelas: {e}")

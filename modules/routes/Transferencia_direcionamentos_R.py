@@ -2,6 +2,7 @@
 from fastapi import FastAPI, HTTPException, Response
 
 from ..controllers.Transferencia_entre_direcionamentos_controller import Transferencia_entre_direcionamentos_controller
+from ..controllers.Direcionamento_controller import Direcionamento_controller
 import json
 from requests import request
 
@@ -10,7 +11,7 @@ def init_routes(app: FastAPI, db_name: str) -> None:
     Function that creates the CRUD routes for Transferencias_entre_direcionamentos
     """
     transferencia_direcionamentos_controller = Transferencia_entre_direcionamentos_controller(db_name)
-
+    Direcionamento_C = Direcionamento_controller(db_name)
     @app.get("/transferencias_entre_direcionamentos")
     def get_transferencias():
         
@@ -34,15 +35,8 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao criar a transferência entre direcionamentos")
         
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{req['id_direcionamento_origem']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{req['id_direcionamento_destino']}",
-            )
+            Direcionamento_C.atualizar(req['id_direcionamento_origem'])
+            Direcionamento_C.atualizar(req['id_direcionamento_destino'])
         
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos direcionamentos: {e}")
@@ -68,15 +62,8 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar a transferência entre direcionamentos")
         
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_transf['id_direcionamento_origem']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_transf['id_direcionamento_destino']}",
-            )
+            Direcionamento_C.atualizar(dados_transf['id_direcionamento_origem'])
+            Direcionamento_C.atualizar(dados_transf['id_direcionamento_destino'])
         
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos direcionamentos: {e}")
@@ -88,10 +75,19 @@ def init_routes(app: FastAPI, db_name: str) -> None:
     
     @app.delete("/transferencias_entre_direcionamentos/{id_transf}")
     def deletar_transferencia(id_transf: int):
-        if not transferencia_direcionamentos_controller.get_dados(id_transf):
+        dados_transf = transferencia_direcionamentos_controller.get_dados(id_transf)
+
+        if not dados_transf:
             raise HTTPException(status_code=404, detail="Transferência entre direcionamentos não encontrada")
         
         if not transferencia_direcionamentos_controller.deletar(id_transf):
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao excluir a transferência entre direcionamentos")
         
+        try:
+            Direcionamento_C.atualizar(dados_transf['id_direcionamento_origem'])
+            Direcionamento_C.atualizar(dados_transf['id_direcionamento_destino'])
+        
+        except Exception as e:
+            return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos direcionamentos: {e}")
+
         return Response(content=json.dumps({"message": "Transferência entre direcionamentos excluída com sucesso"}), media_type="application/json")

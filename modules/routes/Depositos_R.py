@@ -3,10 +3,14 @@ import json
 from fastapi import FastAPI, HTTPException, Response
 
 from modules.controllers.Deposito_controller import Deposito_controller
+from modules.controllers.Banco_controller import Banco_controller
+from modules.controllers.Direcionamento_controller import Direcionamento_controller
 from requests import request
 
 def init_routes(app: FastAPI, db_name: str) -> None:
     Deposito_C = Deposito_controller(db_name)
+    Banco_C = Banco_controller(db_name)
+    Direcionamento_C = Direcionamento_controller(db_name)
 
     @app.get("/depositos")
     def mostrar_depositos():
@@ -33,15 +37,8 @@ def init_routes(app: FastAPI, db_name: str) -> None:
         try:
             for id_banco, id_direcionamento in ids:
 
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/bancos/{id_banco}",
-                )
-
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/direcionamentos/{id_direcionamento}",
-                )
+                Banco_C.atualiza_saldo(id_banco)
+                Direcionamento_C.atualizar(id_direcionamento)
 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
@@ -65,15 +62,8 @@ def init_routes(app: FastAPI, db_name: str) -> None:
 
         try:
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_deposito['id_banco']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_deposito['id_direcionamento']}",
-            )
+            Banco_C.atualiza_saldo(dados_deposito['id_banco'])
+            Direcionamento_C.atualizar(dados_deposito['id_direcionamento'])
 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
@@ -95,27 +85,15 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar o valor do depósito")
 
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_deposito['id_banco']}",
-            )
-
-            request(
-                "PATCH",
-                f"http://localhost:8000/direcionamentos/{dados_deposito['id_direcionamento']}",
-            )
+            Banco_C.atualiza_saldo(dados_deposito['id_banco'])
+            Direcionamento_C.atualizar(dados_deposito['id_direcionamento'])
 
             if req.get('novo_id_banco'):
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/bancos/{req['novo_id_banco']}",
-                )
+                Banco_C.atualiza_saldo(req['novo_id_banco'])
+                
 
             if req.get('novo_id_direcionamento'):
-                request(
-                    "PATCH",
-                    f"http://localhost:8000/direcionamentos/{req['novo_id_direcionamento']}",
-                )
+                Direcionamento_C.atualizar(req['id_direcionamento'])
                 
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo do banco e/ou direcionamento: {e}")
