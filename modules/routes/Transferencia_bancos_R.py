@@ -2,6 +2,8 @@
 from fastapi import FastAPI, HTTPException, Response
 
 from ..controllers.Transferencia_entre_bancos_controller import Transferencia_entre_bancos_controller
+from ..controllers.Banco_controller import Banco_controller
+
 import json
 from requests import request
 
@@ -10,6 +12,8 @@ def init_routes(app: FastAPI, db_name: str) -> None:
     Function that creates the CRUD routes for Transferencias_entre_bancos
     """
     transferencia_bancos_controller = Transferencia_entre_bancos_controller(db_name)
+    Banco_C = Banco_controller(db_name)
+
 
     @app.get("/transferencias_entre_bancos")
     def get_transferencias():
@@ -34,16 +38,10 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao criar a transferência entre bancos")
         
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{req['id_banco_origem']}",
-            )
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{req['id_banco_destino']}",
-            )
-        
+            Banco_C.atualiza_saldo(req["id_banco_origem"])
+            Banco_C.atualiza_saldo(req["id_banco_destino"])
+
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos bancos: {e}")
 
@@ -68,15 +66,9 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar a transferência entre bancos")
         
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_transf['id_banco_origem']}",
-            )
+            Banco_C.atualiza_saldo(req["id_banco_origem"])
+            Banco_C.atualiza_saldo(req["id_banco_destino"])
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_transf['id_banco_destino']}",
-            )
         
         except Exception as e:
             return HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos bancos: {e}")
@@ -102,15 +94,9 @@ def init_routes(app: FastAPI, db_name: str) -> None:
             raise HTTPException(status_code=500, detail="Ocorreu um erro ao deletar a transferência entre bancos")
         
         try:
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_transf['id_banco_origem']}",
-            )
+            Banco_C.atualiza_saldo(dados_transf["id_banco_origem"])
+            Banco_C.atualiza_saldo(dados_transf["id_banco_destino"])
 
-            request(
-                "PATCH",
-                f"http://localhost:8000/bancos/{dados_transf['id_banco_destino']}",
-            )
 
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Ocorreu um erro ao atualizar o saldo dos bancos: {e}")

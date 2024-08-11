@@ -16,6 +16,7 @@ services:
       - sqlitedb
     environment:
       - PGUID=1000
+      - PUID=1000
       - TZ=America/Sao_Paulo
       - ENABLE_UWSGI=true
     volumes:
