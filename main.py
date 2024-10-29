@@ -9,7 +9,7 @@ from modules.routes.Gastos_gerais_R import init_routes as init_routes_gastos_ger
 from modules.routes.Gastos_periodizados_R import init_routes as init_routes_gastos_periodizados
 from modules.routes.Transferencia_bancos_R import init_routes as init_routes_transferencias_bancos
 from modules.routes.Transferencia_direcionamentos_R import init_routes as init_routes_transferencias_direcionamentos
-
+from fastapi.middleware.cors import CORSMiddleware
 
 TEST_DB_NAME = "DB_teste"
 MAIN_DB_NAME = "Controle_Financeiro_DB"
@@ -17,6 +17,20 @@ MAIN_DB_NAME = "Controle_Financeiro_DB"
 app = FastAPI(
     title="API Controle Financeiro",
     version="1.0.0",
+)
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 routes = [
