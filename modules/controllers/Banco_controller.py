@@ -97,7 +97,7 @@ class Banco_controller (SQLite_DB_CRUD):
         if not dados_banco:
             return None
         
-        return dados_banco[0]
+        return dados_banco
 
     def get_id_banco (self, nome_banco: str = "", saldo: float = 0) -> int:
 
