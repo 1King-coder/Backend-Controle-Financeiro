@@ -93,7 +93,7 @@ class Banco_controller (SQLite_DB_CRUD):
         return dados_banco[0]
     
     def get_dados_banco_por_direcionamento (self, id_banco) -> int:
-        dados_banco = self.get_data("Saldo_banco_por_direcionamento", "nome_banco, nome_direcionamento, saldo", f"id_banco = 2")
+        dados_banco = self.get_data("Saldo_banco_por_direcionamento", "nome_banco, nome_direcionamento, saldo", f"id_banco = {id_banco}")
         if not dados_banco:
             return None
         

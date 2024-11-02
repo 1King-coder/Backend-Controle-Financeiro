@@ -314,7 +314,7 @@ class Direcionamento_controller (SQLite_DB_CRUD):
         if not dados_direcionamento:
             return None
         
-        return dados_direcionamento[0]
+        return dados_direcionamento
  
     def get_id_direcionamento (self, nome_direcionamento: str = "", saldo: float = 0) -> int:
 
