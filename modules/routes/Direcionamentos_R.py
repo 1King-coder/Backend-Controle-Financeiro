@@ -13,6 +13,13 @@ def init_routes(app, db_name: str):
             content=json.dumps(Direcionamento_C.mostrar()),
             media_type="application/json"
         )
+    
+    @app.get("/direcionamentos/saldo-por-banco")
+    def mostrar_direcionamentos_saldos_por_banco():
+        return Response(
+            content=json.dumps(Direcionamento_C.mostrar_saldos_por_banco()),
+            media_type="application/json"
+        )
 
     @app.get("/direcionamentos/{id_direcionamento}")
     def mostrar_direcionamento(id_direcionamento: int):

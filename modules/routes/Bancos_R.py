@@ -10,6 +10,10 @@ def init_routes (app, db_name: str) -> None:
     def mostrar_bancos():
         return Response(content=json.dumps(Banco_C.mostrar()), media_type="application/json")
     
+    @app.get("/bancos/saldo-por-direcionamento")
+    def mostrar_bancos_saldos_por_direcionamento():
+        return Response(content=json.dumps(Banco_C.mostrar_saldos_por_direcionamento()), media_type="application/json")
+    
     @app.get("/bancos/{id_banco}")
     def mostrar_banco(id_banco: int):
         dados = Banco_C.get_dados_banco(id_banco)

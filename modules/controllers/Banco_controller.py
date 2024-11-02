@@ -14,6 +14,11 @@ class Banco_controller (SQLite_DB_CRUD):
             "Bancos"
         )
     
+    def mostrar_saldos_por_direcionamento (self) -> list:
+        return self.get_data(
+            "Saldo_banco_por_direcionamento"
+        )
+    
     def dataframe (self) -> 'DataFrame':
         return DataFrame(self.mostrar())
     
