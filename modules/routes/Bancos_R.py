@@ -19,6 +19,15 @@ def init_routes (app, db_name: str) -> None:
         
         return Response(content=json.dumps(dados), media_type="application/json")
     
+    @app.get("/bancos/saldo-por-direcionamento/{id_banco}")
+    def mostrar_banco_saldo_por_direcionamento(id_banco: int):
+        dados = Banco_C.get_dados_banco_por_direcionamento(id_banco)
+
+        if not dados:
+            raise HTTPException(status_code=404, detail="Banco não encontrado")
+        
+        return Response(content=json.dumps(dados), media_type="application/json")
+    
     @app.get("/bancos/get-id/{nome_banco}")
     def id_banco_por_nome(nome_banco: str):
         id_banco = Banco_C.get_id_banco(nome_banco)
