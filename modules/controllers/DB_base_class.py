@@ -117,7 +117,7 @@ class SQLite_DB_CRUD:
             try:
                 sql_select = f"SELECT {command} FROM {table_name}"
                 if WHERE:
-                    sql_select += f" WHERE {WHERE}"
+                    sql_select += f" WHERE {WHERE};"
 
                 self.cursor.execute(sql_select)
                 data = self._organize_data_in_dictionary(self.cursor.fetchall())
