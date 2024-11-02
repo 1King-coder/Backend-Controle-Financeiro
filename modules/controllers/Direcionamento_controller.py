@@ -307,6 +307,14 @@ class Direcionamento_controller (SQLite_DB_CRUD):
             return None
         
         return dados_direcionamento[0]
+    
+    def get_dados_direcionamento_por_banco (self, id_direcionamento: int):
+        dados_direcionamento = self.get_data("Saldo_direcionamento_por_banco", "nome_direcionamento, nome_banco, saldo", f"id_direcionamento = {id_direcionamento}")
+
+        if not dados_direcionamento:
+            return None
+        
+        return dados_direcionamento[0]
  
     def get_id_direcionamento (self, nome_direcionamento: str = "", saldo: float = 0) -> int:
 
