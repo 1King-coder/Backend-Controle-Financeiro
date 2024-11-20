@@ -19,7 +19,7 @@ def init_routes (app, db_name: str) -> None:
         dados = Banco_C.get_dados_banco(id_banco)
 
         if not dados:
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         return Response(content=json.dumps(dados), media_type="application/json")
     
@@ -28,7 +28,7 @@ def init_routes (app, db_name: str) -> None:
         dados = Banco_C.get_dados_banco_por_direcionamento(id_banco)
 
         if not dados:
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         return Response(content=json.dumps(dados), media_type="application/json")
     
@@ -37,7 +37,7 @@ def init_routes (app, db_name: str) -> None:
         id_banco = Banco_C.get_id_banco(nome_banco)
 
         if not id_banco:
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         return Response(content=json.dumps({"id_banco": id_banco}), media_type="application/json")
     
@@ -46,7 +46,7 @@ def init_routes (app, db_name: str) -> None:
         adicionou = Banco_C.adiciona_banco(banco["nome_banco"])
         
         if not adicionou:
-            raise HTTPException(status_code=400, detail="Banco já existe")
+            return HTTPException(status_code=400, detail="Banco já existe")
         
         return Response(content=json.dumps({"message": "Banco adicionado com sucesso"}), media_type="application/json", status_code=201)
 
@@ -54,24 +54,24 @@ def init_routes (app, db_name: str) -> None:
     @app.put("/bancos/{id_banco}")
     def editar_banco(id_banco: int, banco: dict):
         if not Banco_C.get_dados_banco(id_banco):
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         novo_nome = banco["novo_nome"]
         if not isinstance(novo_nome, str):
-            raise HTTPException(status_code=400, detail="Nome não é uma string")
+            return HTTPException(status_code=400, detail="Nome não é uma string")
         
         if not Banco_C.edita_nome_banco(id_banco, novo_nome):
-            raise HTTPException(status_code=500, detail="Ocorreu um erro ao editar o nome do banco")
+            return HTTPException(status_code=500, detail="Ocorreu um erro ao editar o nome do banco")
             
         return Response(content=json.dumps({"message": "Banco editado com sucesso"}), media_type="application/json")
 
     @app.delete("/bancos/{id_banco}")
     def deletar_banco(id_banco: int):
         if not Banco_C.get_dados_banco(id_banco):
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         if not Banco_C.deleta_banco(id_banco):
-            raise HTTPException(status_code=500, detail="Ocorreu um erro ao excluir o banco")
+            return HTTPException(status_code=500, detail="Ocorreu um erro ao excluir o banco")
 
         return Response(content=json.dumps({"message": "Banco excluído com sucesso"}), media_type="application/json")
 
@@ -81,7 +81,7 @@ def init_routes (app, db_name: str) -> None:
         dados_banco = Banco_C.get_dados_banco(id_banco)
 
         if not dados_banco:
-            raise HTTPException(status_code=404, detail="Banco não encontrado")
+            return HTTPException(status_code=404, detail="Banco não encontrado")
         
         if not Banco_C.atualiza_saldo(id_banco):
             return Response(
